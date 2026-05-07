@@ -18,4 +18,9 @@ Entity:: ~Entity() {
 }
 
 //--------------------------------------
+string Entity::GetName() {
+	return name;
+}
+
+//--------------------------------------
 void Entity::Look() {}

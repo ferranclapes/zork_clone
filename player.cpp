@@ -2,6 +2,7 @@
 #include "player.h"
 #include "room.h"
 #include "exit.h"
+#include "item.h"
 
 //--------------------------------------
 Player::Player(const char* name, const char* description, Room* room) : Creature(name, description, room) {
@@ -21,22 +22,59 @@ void Player::Go(Directions dir) {
 
 	Room* current_room = GetCurrentRoom();
 
-	for (list<Entity*>::const_iterator it = current_room->contains.begin(); it != current_room->contains.end(); ++it) {
-		if ((*it)->type == EXIT) {
-			Exit* exit = (Exit*)*it;
+	Exit* exit = current_room->GetExit(dir);
 
-			if (exit->GetDirectionFrom(current_room) == dir) {
-				if (!exit->is_locked) {
-					parent = exit->GetDestinationFrom(current_room);
-					cout << "\nYou go to the " << DirectionToString(dir);
-					Look();
-				}
-				else {
-					cout << "\nThe " << exit->name << " is locked";
-				}
-				return;
-			}
-		}
+	if (exit == nullptr) {
+		cout << "\nThere is no exit to the " << DirectionToString(dir);
+		return;
 	}
-	cout << "\nThere is no exit to the " << DirectionToString(dir);
+	
+	if (exit->is_locked) {
+		cout << "\nThe " << exit->name << " is locked";
+		return;
+	}
+
+	parent = exit->GetDestinationFrom(current_room);
+	cout << "\nYou go to the " << DirectionToString(dir);
+	Look();
 }
+
+//--------------------------------------
+void Player::Take(string item_name) {
+	Room* current_room = GetCurrentRoom();
+	Item* item = current_room->GetItemByName(item_name);
+	if (item == nullptr) {
+		cout << "\nThere is no " << item_name << " here.";
+		return;
+	}
+	inventory.push_back(item);
+	current_room->contains.remove((Entity*)item);
+	cout << "\nYou take the " << item_name;
+}
+
+//--------------------------------------
+void Player::Inventory() {
+	if (inventory.empty()) {
+		cout << "\nYour inventory is empty.";
+		return;
+	}
+	cout << "\nYou have this items in your inventory:";
+	for (list<Item*>::const_iterator it = inventory.begin(); it != inventory.end(); ++it) {
+		cout << "\n- " << (*it)->name;
+	}
+}
+
+//--------------------------------------
+void Player::Examine(string item_name) {
+	Room* current_room = GetCurrentRoom();
+
+	Item* item = current_room->GetItemByName(item_name);
+	
+	if (item == nullptr) {
+		cout << "\nThere is no " << item_name << " here.";
+		return;
+	}
+	
+	item->Examine();
+}
+

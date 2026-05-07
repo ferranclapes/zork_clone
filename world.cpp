@@ -1,6 +1,7 @@
 #include "world.h"
 #include "room.h"
 #include "exit.h"
+#include "item.h"
 #include "player.h"
 #include "useful.h"
 
@@ -12,12 +13,20 @@ World::World() {
 
 	Exit* exit1 = new Exit("Little Path", EAST, WEST, room1, room2, false);
 
+	Item* item1 = new Item("Item1", "This is an weapon item called Item 1", room1, WEAPON);
+
+	Creature* creature1 = new Creature("Creature1", "This is a creature called Creature 1", room2);
+
 	player = new Player("Player", "This is the player", room1);
 
 	entities.push_back(room1);
 	entities.push_back(room2);
 
 	entities.push_back(exit1);
+
+	entities.push_back(item1);
+
+	entities.push_back(creature1);
 
 	entities.push_back(player);
 }
@@ -42,11 +51,24 @@ void World::ParseCommand(vector<string> args) {
 			player->Go(StringToDirection(args[0]));
 			break;
 		}
+		if (Same(args[0], "inventory") || Same(args[0], "i")) {
+			player->Inventory();
+			break;
+		}
 
 	case 2:
 		if (Same(args[0], "go")) {
 			player->Go(StringToDirection(args[1]));
 			break;
 		}
+		if (Same(args[0], "look") || Same(args[0], "examine")) {
+			player->Examine(args[1]);
+			break;
+		}
+		if (Same(args[0], "take")) {
+			player->Take(args[1]);
+			break;
+		}
 	}
+
 }

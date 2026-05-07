@@ -20,6 +20,8 @@ public:
     Entity(const char* name, const char* description, Entity* parent);
     virtual ~Entity();
 
+	string GetName();
+
     virtual void Look();
 
     // Attributes-------------

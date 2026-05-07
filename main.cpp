@@ -19,6 +19,7 @@ int main()
 
     cout << "Welcome to Zork!\n";
 	cout << "--------------------\n";
+	cout << "> ";
 
     while (1)
     {
@@ -40,7 +41,7 @@ int main()
 			}
         }
 
-		if (args.size() > 0 && Same(args[0], "quit")) {
+		if (args.size() > 0 && (Same(args[0], "quit") || Same(args[0], "q"))) {
 			break;
 		}
 
