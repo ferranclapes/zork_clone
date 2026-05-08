@@ -1,15 +1,17 @@
 #include <iostream>
 #include "exit.h"
 #include "room.h"
+#include "item.h"
 
 //--------------------------------------
-Exit::Exit(const char* name, Directions direction, Directions opposite_direction, Room* source, Room* destination, bool is_one_way) : Entity(name, "", source) {
+Exit::Exit(const char* name, Directions direction, Directions opposite_direction, Room* source, Room* destination, bool is_one_way, bool is_locked) : Entity(name, "", source) {
 	this->type = EXIT;
 	this->direction = direction;
 	this->opposite_direction = opposite_direction;
 	this->source = source;
 	this->destination = destination;
 	this->is_one_way = is_one_way;
+	this->is_locked = is_locked;
 
 	if (!is_one_way) {
 		destination->contains.push_back(this);
@@ -61,4 +63,9 @@ Room* Exit::GetDestinationFrom(Room* current_room) {
 	else {
 		return NULL;
 	}
+}
+
+//--------------------------------------
+void Exit::AddKey(Item* key) {
+	this->keys.push_back(key);
 }

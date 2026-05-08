@@ -21,6 +21,7 @@ public:
 	virtual void Go(Directions dir);
 
 	virtual void Take(string item_name);
+	virtual void Unlock(Directions dir, string key_name);
 
 	Room* GetCurrentRoom();
 

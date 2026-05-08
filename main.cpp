@@ -14,12 +14,12 @@ int main()
     string player_input;
 	vector<string> args;
 
+	cout << "Welcome to Zork!";
+	cout << "\n--------------------";
+
 	World world = World();
 
-
-    cout << "Welcome to Zork!\n";
-	cout << "--------------------\n";
-	cout << "> ";
+	cout << "\n> ";
 
     while (1)
     {
@@ -46,10 +46,12 @@ int main()
 		}
 
 		if (args.size() > 0) {
-			world.ParseCommand(args);
-		}
+			bool valid_command = world.ParseCommand(args);
 
-		if (args.size() > 0) {
+			if (!valid_command) {
+				cout << "\nSorry, I don't understand that command. ";
+			}
+
 			args.clear();
 			player_input = "";
 			cout << "\n> ";

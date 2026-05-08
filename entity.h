@@ -21,6 +21,7 @@ public:
     virtual ~Entity();
 
 	string GetName();
+	void ChangeParent(Entity* new_parent);
 
     virtual void Look();
 

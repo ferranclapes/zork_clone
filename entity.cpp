@@ -23,4 +23,15 @@ string Entity::GetName() {
 }
 
 //--------------------------------------
+void Entity::ChangeParent(Entity* new_parent) {
+	if (parent != nullptr) {
+		parent->contains.remove(this);
+	}
+	parent = new_parent;
+	if (new_parent != nullptr) {
+		new_parent->contains.push_back(this);
+	}
+}
+
+//--------------------------------------
 void Entity::Look() {}

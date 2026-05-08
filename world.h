@@ -15,7 +15,7 @@ public:
 	World();
 	~World();
 
-	void ParseCommand(vector<string> args);
+	bool ParseCommand(vector<string> args);
 
 	//Atributes-------------
 	list<Entity*> entities;
