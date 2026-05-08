@@ -20,13 +20,10 @@ void Item::Look() {
 	case CONTAINER:
 		if (is_open) {
 			cout << "\nThere is an open " << name << " here.";
-			if (!contains.empty()) {
+			if (!GetContains().empty()) {
 				cout << " It contains:";
-				for (list<Entity*>::const_iterator it = contains.begin(); it != contains.end(); ++it) {
-					if ((*it)->type == ITEM) {
-						Item* item = (Item*)(*it);
-						cout << "\n - " << item->GetName();
-					}
+				for (Entity* entity : GetContains()) {
+					cout << "\n - " << entity->GetName();
 				}
 			}
 		}
@@ -58,14 +55,14 @@ void Item::ListContents() {
 		cout << "\nIt's closed.";
 		return;
 	}
-	if (contains.empty()) {
+	if (GetContains().empty()) {
 		cout << "\nIt's empty.";
 		return;
 	}
 	cout << "\nIt contains:";
-	for (list<Entity*>::const_iterator it = contains.begin(); it != contains.end(); ++it) {
-		if ((*it)->type == ITEM) {
-			Item* item = (Item*)(*it);
+	for (Entity* entity : contains) {
+		if (entity->GetType() == ITEM) {
+			Item* item = (Item*)entity;
 			cout << "\n - " << item->GetName();
 		}
 	}

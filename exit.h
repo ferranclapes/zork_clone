@@ -20,7 +20,11 @@ public:
 	Room* GetDestinationFrom(Room* current_room);
 	void AddKey(Item* key);
 
+	bool IsLocked() { return is_locked; }
+	void Unlock();
+	void Lock();
 	//Attributes-------------
+private:
 	Directions direction;
 	Directions opposite_direction;
 	Room* source;

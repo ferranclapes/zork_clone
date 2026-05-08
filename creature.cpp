@@ -36,7 +36,7 @@ void Creature::Go(Directions dir) {
 		return;
 	}
 
-	if (exit->is_locked) {
+	if (exit->IsLocked()) {
 		return;
 	}
 
@@ -44,7 +44,7 @@ void Creature::Go(Directions dir) {
 		cout << "\nThe " << name << " goes to the " << DirectionToString(dir);
 	}
 
-	parent = exit->GetDestinationFrom(current_room);
+	ChangeParent(exit->GetDestinationFrom(current_room));
 }
 
 //--------------------------------------
@@ -58,7 +58,7 @@ void Creature::Take(string item_name) {
 		return;
 	}
 	inventory.push_back(item);
-	current_room->contains.remove((Entity*)item);
+	current_room->RemoveContainedEntity(item);
 	cout << "\nThe " << name << " takes the " << item_name;
 }
 
@@ -72,15 +72,15 @@ void Creature::Unlock(Directions dir, string key_name) {
 	if (exit == nullptr) {
 		return;
 	}
-	if (!exit->is_locked) {
+	if (!exit->IsLocked()) {
 		return;
 	}
-	for (list<Item*>::const_iterator it = inventory.begin(); it != inventory.end(); ++it) {
-		Item* item = (Item*)*it;
-		if (item->name == key_name) {
-			exit->is_locked = false;
+	for (Entity* entity : inventory) {
+		Item* item = (Item*)entity;
+		if (item->GetName() == key_name) {
+			exit->Unlock();
 			if (current_room->PlayerInRoom()) {
-				cout << "\nThe " << name << " unlocks the " << exit->name << " to the " << DirectionToString(dir);
+				cout << "\nThe " << name << " unlocks the " << exit->GetName() << " to the " << DirectionToString(dir);
 			}
 			return;
 		}
@@ -89,7 +89,7 @@ void Creature::Unlock(Directions dir, string key_name) {
 
 //--------------------------------------
 Room* Creature::GetCurrentRoom() {
-	return (Room*)parent;
+	return (Room*) GetParent();
 }
 
 //--------------------------------------

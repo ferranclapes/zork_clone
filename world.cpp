@@ -44,8 +44,8 @@ World::World() {
 
 //--------------------------------------
 World::~World() {
-	for (list<Entity*>::const_iterator it = entities.begin(); it != entities.end(); ++it) {
-		delete* it;
+	for (Entity* entity : entities) {
+		delete entity;
 	}
 }
 

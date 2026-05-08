@@ -23,6 +23,21 @@ string Entity::GetName() {
 }
 
 //--------------------------------------
+string Entity::GetDescription() {
+	return description;
+}
+
+//--------------------------------------
+void Entity::AddContainedEntity(Entity* entity) {
+	contains.push_back(entity);
+}
+
+//--------------------------------------
+void Entity::RemoveContainedEntity(Entity* entity) {
+	contains.remove(entity);
+}
+
+//--------------------------------------
 void Entity::ChangeParent(Entity* new_parent) {
 	if (parent != nullptr) {
 		parent->contains.remove(this);

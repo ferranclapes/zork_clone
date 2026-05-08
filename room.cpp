@@ -19,24 +19,24 @@ void Room::Look() {
 	cout << "\n" << name;
 	cout << "\n" << description;
 
-	for (list<Entity*>::const_iterator it = contains.begin(); it != contains.end(); ++it) {
-		if ((*it)->type == EXIT) {
-			Exit* exit = (Exit*)*it;
+	for (Entity* entity : contains) {
+		if (entity->GetType() == EXIT) {
+			Exit* exit = (Exit*)entity;
 			exit->Look(this);
 
 		}
 	}
 
-	for (list<Entity*>::const_iterator it = contains.begin(); it != contains.end(); ++it) {
-		if ((*it)->type == ITEM) {
-			Item* item = (Item*)*it;
+	for (Entity* entity : contains) {
+		if (entity->GetType() == ITEM) {
+			Item* item = (Item*)entity;
 			item->Look();
 		}
 	}
 
-	for (list<Entity*>::const_iterator it = contains.begin(); it != contains.end(); ++it) {
-		if ((*it)->type == CREATURE) {
-			Creature* creature = (Creature*)*it;
+	for (Entity* entity : contains) {
+		if (entity->GetType() == CREATURE) {
+			Creature* creature = (Creature*)entity;
 			creature->Look();
 		}
 	}
@@ -44,9 +44,9 @@ void Room::Look() {
 
 //--------------------------------------
 Exit* Room::GetExit(Directions dir) {
-	for (list<Entity*>::const_iterator it = contains.begin(); it != contains.end(); ++it) {
-		if ((*it)->type == EXIT) {
-			Exit* exit = (Exit*)*it;
+	for (Entity* entity : contains) {
+		if (entity->GetType() == EXIT) {
+			Exit* exit = (Exit*)entity;
 			if (exit->GetDirectionFrom(this) == dir) {
 				return exit;
 			}
@@ -57,10 +57,10 @@ Exit* Room::GetExit(Directions dir) {
 
 //--------------------------------------
 Item* Room::GetItemByName(string item_name) {
-	for (list<Entity*>::const_iterator it = contains.begin(); it != contains.end(); ++it) {
-		if ((*it)->type == ITEM) {
-			if (Same((*it)->GetName(), item_name)) {
-				return (Item*)*it;
+	for (Entity* entity : contains) {
+		if (entity->GetType() == ITEM) {
+			if (Same(entity->GetName(), item_name)) {
+				return (Item*)entity;
 			}
 		}
 	}
@@ -69,8 +69,8 @@ Item* Room::GetItemByName(string item_name) {
 
 //--------------------------------------
 bool Room::PlayerInRoom() {
-	for (list<Entity*>::const_iterator it = contains.begin(); it != contains.end(); ++it) {
-		if ((*it)->type == PLAYER) {
+	for (Entity* entity : contains) {
+		if (entity->GetType() == PLAYER) {
 			return true;
 		}
 	}

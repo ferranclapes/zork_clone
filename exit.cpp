@@ -14,7 +14,7 @@ Exit::Exit(const char* name, Directions direction, Directions opposite_direction
 	this->is_locked = is_locked;
 
 	if (!is_one_way) {
-		destination->contains.push_back(this);
+		destination->AddContainedEntity(this);
 	}
 }
 
@@ -68,4 +68,13 @@ Room* Exit::GetDestinationFrom(Room* current_room) {
 //--------------------------------------
 void Exit::AddKey(Item* key) {
 	this->keys.push_back(key);
+}
+
+//--------------------------------------
+void Exit::Unlock() {
+	is_locked = false;
+}
+
+void Exit::Lock() {
+	is_locked = true;
 }

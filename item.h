@@ -22,7 +22,11 @@ public:
 	void Open();
 	void Close();
 
+	ItemType GetItemType() { return item_type; }
+	bool IsOpen() { return is_open; }
+	bool IsLocked() { return is_locked; }
 	// Attributes-------------
+private:
 	ItemType item_type;
 	bool is_open;
 	bool is_locked;

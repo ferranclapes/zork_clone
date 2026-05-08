@@ -27,6 +27,7 @@ public:
 
 	bool IsAlive();
 	//Atributes-------------
+protected:
 	int hp;
 	list<Item*> inventory;
 };

@@ -19,13 +19,21 @@ public:
     // Methods-------------
     Entity(const char* name, const char* description, Entity* parent);
     virtual ~Entity();
+	void SetType(EntityType type) { this->type = type; }
 
-	string GetName();
 	void ChangeParent(Entity* new_parent);
+	void AddContainedEntity(Entity* entity);
+	void RemoveContainedEntity(Entity* entity);
 
     virtual void Look();
 
+	EntityType GetType() { return type; }
+    string GetName();
+	string GetDescription();
+	Entity* GetParent() { return parent; }
+	const list<Entity*>& GetContains() { return contains; }
     // Attributes-------------
+protected:
     EntityType type;
     string name;
     string description;
