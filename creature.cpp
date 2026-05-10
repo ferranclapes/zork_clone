@@ -11,8 +11,6 @@ Creature::Creature(const char* name, const char* description, Room* room) : Enti
 	hp = 1;
 }
 
-//--------------------------------------
-Creature::~Creature() {}
 
 //--------------------------------------
 void Creature::Look() {

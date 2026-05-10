@@ -19,7 +19,18 @@ Exit::Exit(const char* name, Directions direction, Directions opposite_direction
 }
 
 //--------------------------------------
-Exit::~Exit() {}
+Exit::~Exit() {
+	if (destination != nullptr)
+		destination->RemoveContainedEntity(this);
+	if (parent != nullptr)
+		parent->RemoveContainedEntity(this);
+}
+
+void Exit::RemoveDestination() {
+	if (destination != nullptr) {
+		destination = nullptr;
+	}
+}
 
 //--------------------------------------
 void Exit::Look(Room* current_room) {

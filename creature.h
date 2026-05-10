@@ -15,7 +15,6 @@ class Creature : public Entity {
 public:
 	//Methods-------------
 	Creature(const char* name, const char* description, Room* room);
-	~Creature();
 
 	virtual void Look();
 	virtual void Go(Directions dir);

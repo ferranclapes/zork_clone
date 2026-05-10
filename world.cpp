@@ -8,6 +8,8 @@
 //--------------------------------------
 World::World() {
 
+	start_time = chrono::steady_clock::now();
+
 	Room* room1 = new Room("Room 1", "This is a room called Room 1");
 	Room* room2 = new Room("Room 2", "This is a room called Room 2");
 	Room* room3 = new Room("Room 3", "This is a room called Room 3");
@@ -44,9 +46,32 @@ World::World() {
 
 //--------------------------------------
 World::~World() {
-	for (Entity* entity : entities) {
-		delete entity;
+	for (Entity* e : entities) {
+		delete e;
 	}
+	entities.clear();
+}
+
+
+//--------------------------------------
+bool World::Update(vector<string> args) {
+	bool return_value = true;
+
+	if (args.size() > 0) {
+		return_value = ParseCommand(args);
+	}
+
+	chrono::steady_clock::time_point current_time = chrono::steady_clock::now();
+	chrono::duration<float> elapsed_time = current_time - start_time;
+	if (elapsed_time.count() >= UPDATE_FREQUENCY) {
+		for (Entity* entity : entities) {
+			//entity->Update();
+		}
+
+		start_time = current_time;
+	}
+
+	return return_value;
 }
 
 //--------------------------------------

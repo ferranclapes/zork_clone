@@ -1,4 +1,5 @@
 #include "entity.h"
+#include "exit.h"
 
 //--------------------------------------
 Entity::Entity(const char* name, const char* description, Entity* parent = nullptr) {
@@ -15,6 +16,26 @@ Entity::Entity(const char* name, const char* description, Entity* parent = nullp
 
 //--------------------------------------
 Entity:: ~Entity() {
+	if (parent != nullptr) {
+		parent->RemoveContainedEntity(this);
+	}
+	while (!contains.empty()) {
+		Entity* e = contains.front();
+		contains.pop_front();
+		if (e->GetType() == EXIT) {
+			Exit* exit = (Exit*)e;
+			if (exit->GetParent() == this) {
+				exit->ChangeParent(nullptr);
+			}
+			else {
+				exit->RemoveDestination();
+			}
+		}
+		else {
+			e->ChangeParent(nullptr);
+		}
+	}
+	contains.clear();
 }
 
 //--------------------------------------

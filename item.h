@@ -13,7 +13,6 @@ class Item : public Entity {
 public:
 	// Methods-------------
 	Item(const char* name, const char* description, Entity* parent, ItemType item_type);
-	~Item();
 
 	void Look();
 

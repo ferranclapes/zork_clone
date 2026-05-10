@@ -9,8 +9,6 @@ Player::Player(const char* name, const char* description, Room* room) : Creature
 	type = PLAYER;
 }
 
-//--------------------------------------
-Player::~Player() {}
 
 //--------------------------------------
 void Player::Look() {

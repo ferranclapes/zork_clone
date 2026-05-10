@@ -7,12 +7,9 @@
 using namespace std;
 
 //--------------------------------------
-Room::Room(const char* name, const char* description) : Entity(name, description, NULL) {
+Room::Room(const char* name, const char* description) : Entity(name, description, nullptr) {
 	type = ROOM;
 }
-
-//--------------------------------------
-Room::~Room() {}
 
 //--------------------------------------
 void Room::Look() {

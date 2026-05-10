@@ -12,17 +12,14 @@ Item::Item(const char* name, const char* description, Entity* parent, ItemType i
 }
 
 //--------------------------------------
-Item::~Item() {}
-
-//--------------------------------------
 void Item::Look() {
 	switch (item_type) {
 	case CONTAINER:
 		if (is_open) {
 			cout << "\nThere is an open " << name << " here.";
-			if (!GetContains().empty()) {
+			if (!contains.empty()) {
 				cout << " It contains:";
-				for (Entity* entity : GetContains()) {
+				for (Entity* entity : contains) {
 					cout << "\n - " << entity->GetName();
 				}
 			}
@@ -55,7 +52,7 @@ void Item::ListContents() {
 		cout << "\nIt's closed.";
 		return;
 	}
-	if (GetContains().empty()) {
+	if (contains.empty()) {
 		cout << "\nIt's empty.";
 		return;
 	}

@@ -14,6 +14,7 @@ public:
 	//Methods-------------
 	Exit(const char* name, Directions direction, Directions opposite_direction, Room* source, Room* destination, bool is_one_way, bool is_locked);
 	~Exit();
+	void RemoveDestination();
 
 	void Look(Room* current_room);
 	Directions GetDirectionFrom(Room* current_room);

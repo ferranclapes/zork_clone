@@ -11,7 +11,6 @@ class Player : public Creature {
 public:
 	//Methods-------------
 	Player(const char* name, const char* description, Room* room);
-	~Player();
 
 	void Look();
 	void Go(Directions dir);

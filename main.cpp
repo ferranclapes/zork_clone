@@ -45,13 +45,12 @@ int main()
 			break;
 		}
 
+		bool valid_command = world.Update(args);
+		if (!valid_command) {
+			cout << "\nSorry, I don't understand that command. ";
+		}
+
 		if (args.size() > 0) {
-			bool valid_command = world.ParseCommand(args);
-
-			if (!valid_command) {
-				cout << "\nSorry, I don't understand that command. ";
-			}
-
 			args.clear();
 			player_input = "";
 			cout << "\n> ";

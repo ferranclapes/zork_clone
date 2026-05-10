@@ -1,7 +1,6 @@
 ﻿  creature.cpp
   entity.cpp
   exit.cpp
-  item.cpp
   player.cpp
   room.cpp
   world.cpp
