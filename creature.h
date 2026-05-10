@@ -56,7 +56,6 @@ public:
 	void SetHostile(bool is_hostile) { this->is_hostile = is_hostile; }
 	//Atributes-------------
 protected:
-	list<Item*> inventory;
 	HealthStatus health_status = HEALTHY;
 	bool is_hostile;
 	Creature* combat_target = nullptr;

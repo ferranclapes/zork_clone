@@ -75,8 +75,6 @@ bool Creature::Take(string item_name) {
 	if (item == nullptr) {
 		return false;
 	}
-	inventory.push_back(item);
-	contains.push_back(item);
 	current_room->RemoveContainedEntity(item);
 	cout << "\nThe " << name << " takes the " << item_name;
 	return true;
@@ -108,7 +106,7 @@ bool Creature::Unlock(Directions dir, string key_name) {
 
 //--------------------------------------
 Item* Creature::GetFromInventory(string item_name) {
-	for (Entity* entity : inventory) {
+	for (Entity* entity : contains) {
 		Item* item = (Item*)entity;
 		if (Same(item->GetName(), item_name)) {
 			return item;

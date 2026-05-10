@@ -51,8 +51,6 @@ bool Player::Take(string item_name) {
 		cout << "\nThere is no " << item_name << " here.";
 		return false;
 	}
-	inventory.push_back(item);
-	contains.push_back(item);
 	item->ChangeParent(this);
 	cout << "\nYou take the " << item_name;
 	return true;
@@ -69,7 +67,6 @@ bool Player::Drop(string item_name) {
 	}
 	else {
 		item_to_drop->ChangeParent(GetCurrentRoom());
-		inventory.remove(item_to_drop);
 		cout << "\nYou drop the " << item_name;
 		return true;
 	}
@@ -127,7 +124,6 @@ bool Player::Put(string item_name, string container_name) {
 	}
 
 	item_to_put->ChangeParent(container);
-	inventory.remove(item_to_put);
 	cout << "\nYou put the " << item_name << " in the " << container_name;
 
 	return true;
@@ -161,19 +157,18 @@ bool Player::TakeFrom(string item_name, string container_name) {
 		return false;
 	}
 	item_to_take->ChangeParent(this);
-	inventory.push_back(item_to_take);
 	cout << "\nYou take the " << item_name << " from the " << container_name;
 	return true;
 }
 
 //--------------------------------------
 void Player::Inventory() {
-	if (inventory.empty()) {
+	if (contains.empty()) {
 		cout << "\nYour inventory is empty.";
 		return;
 	}
 	cout << "\nYou have this items in your inventory:";
-	for (Entity* entity : inventory) {
+	for (Entity* entity : contains) {
 		cout << "\n- " << entity->GetName();
 	}
 }
@@ -282,6 +277,7 @@ bool Player::Equip(string item_name) {
 	}
 
 	equipped_weapon = weapon;
+	weapon->ChangeParent(this);
 	cout << "\nYou equip the " << item_name;
 	return true;
 }
