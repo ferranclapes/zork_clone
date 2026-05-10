@@ -45,9 +45,16 @@ int main()
 			break;
 		}
 
-		bool valid_command = world.Update(args);
-		if (!valid_command) {
-			cout << "\nSorry, I don't understand that command. ";
+		bool player_alive = world.Update(args);
+
+		if (!player_alive) {
+			int play_again = world.GameOver(args);
+			if (play_again == 1) {
+				world.ResetWorld();
+			}
+			else if (play_again == 2) {
+				break;
+			}
 		}
 
 		if (args.size() > 0) {

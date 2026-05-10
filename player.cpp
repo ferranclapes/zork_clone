@@ -334,10 +334,11 @@ bool Player::Attack(string target_name, bool fatal_intent) {
 		DamageLevel damage = static_cast<DamageLevel>(rand() % 5);
 		if (damage == NO_DAMAGE) {
 			cout << "\nYou attack the " << combat_target->GetName() << " with the " << equipped_weapon->GetName() << " but miss.";
-			return true;
 		}
-		cout << "\nYou hit the " << combat_target->GetName() << " with the " << equipped_weapon->GetName();
-		combat_target->TakeDamage(damage, true);
+		else {
+			cout << "\nYou hit the " << combat_target->GetName() << " with the " << equipped_weapon->GetName();
+			combat_target->TakeDamage(damage, true);
+		}
 	}
 	else {
 		DamageLevel damage = static_cast<DamageLevel>(rand() % 2);
@@ -345,8 +346,15 @@ bool Player::Attack(string target_name, bool fatal_intent) {
 			cout << "\nYou attack the " << combat_target->GetName() << " but miss.";
 			return true;
 		}
-		cout << "\nYou hit the " << combat_target->GetName() << " without any weapon.";
-		combat_target->TakeDamage(damage, true);
+		else {
+			cout << "\nYou hit the " << combat_target->GetName() << " without any weapon.";
+			combat_target->TakeDamage(damage, true);
+		}
+	}
+
+	if (!combat_target->IsHostile()) {
+		combat_target->SetHostile(true);
+		cout << "\nThe " << combat_target->GetName() << " is now mad at you!";
 	}
 }
 
@@ -373,5 +381,7 @@ void Player::TakeDamage(DamageLevel damage, bool fatal_intent) {
 	if (health_status >= DEAD) {
 		health_status = DEAD;
 		cout << "\nYou have died.";
+		cout << "\nGame over.\nBetter luck next time!";
+		cout << "\nDo you want to play again?";
 	}
 }

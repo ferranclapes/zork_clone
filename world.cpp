@@ -1,3 +1,4 @@
+#include <iostream>
 #include "world.h"
 #include "room.h"
 #include "exit.h"
@@ -7,9 +8,19 @@
 
 //--------------------------------------
 World::World() {
+	InitializeWorld();
+}
 
-	start_time = chrono::steady_clock::now();
+//--------------------------------------
+World::~World() {
+	for (Entity* e : entities) {
+		delete e;
+	}
+	entities.clear();
+}
 
+//--------------------------------------
+void World::InitializeWorld() {
 	Room* room1 = new Room("Room 1", "This is a room called Room 1");
 	Room* room2 = new Room("Room 2", "This is a room called Room 2");
 	Room* room3 = new Room("Room 3", "This is a room called Room 3");
@@ -30,7 +41,7 @@ World::World() {
 	entities.push_back(item1);
 	entities.push_back(itemContainer);
 	entities.push_back(key);
-	
+
 	exit2->AddKey(key);
 
 
@@ -45,33 +56,43 @@ World::World() {
 }
 
 //--------------------------------------
-World::~World() {
+void World::ResetWorld() {
 	for (Entity* e : entities) {
 		delete e;
 	}
 	entities.clear();
+	InitializeWorld();
 }
-
 
 //--------------------------------------
 bool World::Update(vector<string> args) {
-	bool return_value = true;
-
+	if (!player->IsAlive()) {
+		return false;
+	}
+	CommandReturnValue command_return_value = VALID_COMMAND;
 	if (args.size() > 0) {
-		return_value = ParseCommand(args);
-		if (return_value) {
+		 command_return_value = ParseCommand(args);
+		if (command_return_value == VALID_COMMAND) {
 			for (Entity* e : entities) {
 				e->Update();
 			}
 
 		}
+		else if (command_return_value == INVALID_COMMAND) {
+			cout << "\nSorry, I don't understand that command. ";
+		}
 	}
-	return return_value;
+	if (!player->IsAlive()) {
+		return false;
+	}
+	
+	return true;
 }
 
 //--------------------------------------
-bool World::ParseCommand(vector<string> args) {
-	bool valid_command = true;
+CommandReturnValue World::ParseCommand(vector<string> args) {
+	CommandReturnValue valid_command = VALID_COMMAND;
+	bool valid_parameters = true;
 	switch (args.size()) {
 	case 1:
 		if (Same(args[0], "look")) {
@@ -80,7 +101,7 @@ bool World::ParseCommand(vector<string> args) {
 		}
 		else if (Same(args[0], "east") || Same(args[0], "west") || Same(args[0], "north") || Same(args[0], "south")
 			|| Same(args[0], "e") || Same(args[0], "w") || Same(args[0], "n") || Same(args[0], "s")) {
-			valid_command = player->Go(StringToDirection(args[0]));
+			valid_parameters = player->Go(StringToDirection(args[0]));
 			break;
 		}
 		else if (Same(args[0], "inventory") || Same(args[0], "i")) {
@@ -92,15 +113,15 @@ bool World::ParseCommand(vector<string> args) {
 			break;
 		}
 		else if (Same(args[0], "attack")) {
-			valid_command = player->Attack(false);
+			valid_parameters = player->Attack(false);
 			break;
 		}
 		else if (Same(args[0], "kill")) {
-			valid_command = player->Attack(true);
+			valid_parameters = player->Attack(true);
 			break;
 		}
 		else {
-			valid_command = false;
+			valid_command = INVALID_COMMAND;
 		}
 		break;
 
@@ -110,35 +131,35 @@ bool World::ParseCommand(vector<string> args) {
 			break;
 		}
 		else if (Same(args[0], "look") || Same(args[0], "examine")) {
-			valid_command = player->Examine(args[1]);
+			valid_parameters = player->Examine(args[1]);
 			break;
 		}
 		else if (Same(args[0], "take")) {
-			valid_command = player->Take(args[1]);
+			valid_parameters = player->Take(args[1]);
 			break;
 		}
 		else if (Same(args[0], "drop")) {
-			valid_command = player->Drop(args[1]);
+			valid_parameters = player->Drop(args[1]);
 			break;
 		}
 		else if (Same(args[0], "open")) {
-			valid_command = player->Open(args[1]);
+			valid_parameters = player->Open(args[1]);
 			break;
 		}
 		else if (Same(args[0], "close")) {
-			valid_command = player->Close(args[1]);
+			valid_parameters = player->Close(args[1]);
 			break;
 		}
 		else if (Same(args[0], "attack")) {
-			valid_command = player->Attack(args[1], false);
+			valid_parameters = player->Attack(args[1], false);
 			break;
 		}
 		else if (Same(args[0], "kill")) {
-			valid_command = player->Attack(args[1], true);
+			valid_parameters = player->Attack(args[1], true);
 			break;
 		}
 		else if (Same(args[0], "equip")) {
-			valid_command = player->Equip(args[1]);
+			valid_parameters = player->Equip(args[1]);
 			break;
 		}
 		else if (Same(args[0], "unequip")) {
@@ -146,7 +167,7 @@ bool World::ParseCommand(vector<string> args) {
 			break;
 		}
 		else {
-			valid_command = false;
+			valid_command = INVALID_COMMAND;
 		}
 		break;
 
@@ -154,22 +175,36 @@ bool World::ParseCommand(vector<string> args) {
 		break;
 	case 4:
 		if (Same(args[0], "unlock") && (Same(args[2], "with") || Same(args[2], "using"))) {
-			valid_command = player->Unlock(StringToDirection(args[1]), args[3]);
+			valid_parameters = player->Unlock(StringToDirection(args[1]), args[3]);
 		}
 		else if (Same(args[0], "put") && Same(args[2], "in")) {
-			valid_command = player->Put(args[1], args[3]);
+			valid_parameters = player->Put(args[1], args[3]);
 		}
 		else if ((Same(args[0], "take") && Same(args[2], "from")) || (Same(args[0], "take") && Same(args[2], "from"))) {
-			valid_command = player->TakeFrom(args[1], args[3]);
+			valid_parameters = player->TakeFrom(args[1], args[3]);
 		}
 		else {
-			valid_command = false;
+			valid_command = INVALID_COMMAND;
 		}
 		break;
 
 	default:
-		valid_command = false;
+		valid_command = INVALID_COMMAND;
 		break;
 	}
+	if (!valid_parameters && valid_command == VALID_COMMAND) {
+		valid_command = WRONG_PARAMETERS;
+	}
 	return valid_command;
+}
+
+//--------------------------------------
+int World::GameOver(vector<string> args) {
+	if (args.size() > 0 && (Same(args[0], "y") || Same(args[0], "yes"))) {
+		return 1;
+	}
+	else if (args.size() > 0 && (Same(args[0], "n") || Same(args[0], "no"))) {
+		return 2;
+	}
+	return 0;
 }

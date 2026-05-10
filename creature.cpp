@@ -21,7 +21,7 @@ void Creature::Update() {
 		if (combat_target == nullptr) {
 			combat_target = (Creature*)GetCurrentRoom()->GetPlayer();	// Returns nullptr if the player isn't in the room
 		}
-		else {
+		if (combat_target != nullptr) {
 			Attack();
 			if (!combat_target->IsAlive()) {
 				combat_target = nullptr;

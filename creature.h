@@ -50,6 +50,8 @@ public:
 	HealthStatus GetHealthStatus() { return health_status; }
 	void Attack();
 	virtual void TakeDamage(DamageLevel damage, bool fatal_intent);
+	bool IsHostile() { return is_hostile; }
+	void SetHostile(bool is_hostile) { this->is_hostile = is_hostile; }
 	//Atributes-------------
 protected:
 	list<Item*> inventory;
