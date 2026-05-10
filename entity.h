@@ -21,6 +21,8 @@ public:
     virtual ~Entity();
 	void SetType(EntityType type) { this->type = type; }
 
+    virtual void Update();
+
 	void ChangeParent(Entity* new_parent);
 	void AddContainedEntity(Entity* entity);
 	void RemoveContainedEntity(Entity* entity);

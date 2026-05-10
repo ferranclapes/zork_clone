@@ -39,6 +39,9 @@ Entity:: ~Entity() {
 }
 
 //--------------------------------------
+void Entity::Update() {}
+
+//--------------------------------------
 string Entity::GetName() {
 	return name;
 }
@@ -61,11 +64,11 @@ void Entity::RemoveContainedEntity(Entity* entity) {
 //--------------------------------------
 void Entity::ChangeParent(Entity* new_parent) {
 	if (parent != nullptr) {
-		parent->contains.remove(this);
+		parent->RemoveContainedEntity(this);
 	}
 	parent = new_parent;
 	if (new_parent != nullptr) {
-		new_parent->contains.push_back(this);
+		new_parent->AddContainedEntity(this);
 	}
 }
 

@@ -13,16 +13,23 @@ public:
 	Player(const char* name, const char* description, Room* room);
 
 	void Look();
-	void Go(Directions dir);
-	void Take(string item_name);
-	void Drop(string item_name);
-	void Unlock(Directions dir, string key_name);
-	void Put(string item_name, string container_name);
-	void TakeFrom(string item_name, string container_name);
+	bool Go(Directions dir);
+	bool Take(string item_name);
+	bool Drop(string item_name);
+	bool Unlock(Directions dir, string key_name);
+	bool Put(string item_name, string container_name);
+	bool TakeFrom(string item_name, string container_name);
 
 	void Inventory();
-	void Examine(string item_name);
-	void Open(string container_name);
-	void Close(string container_name);
+	bool Examine(string item_name);
+	bool Open(string container_name);
+	bool Close(string container_name);
+
+	bool Equip(string item_name);
+	void Unequip();
+
+	bool Attack(bool fatal_intent);
+	bool Attack(string target_name, bool fatal_intent);
+	void TakeDamage(DamageLevel damage, bool fatal_intent);
 	//Atributes-------------
 };

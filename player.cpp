@@ -5,7 +5,7 @@
 #include "item.h"
 
 //--------------------------------------
-Player::Player(const char* name, const char* description, Room* room) : Creature(name, description, room) {
+Player::Player(const char* name, const char* description, Room* room) : Creature(name, description, room, false) {
 	type = PLAYER;
 }
 
@@ -16,7 +16,12 @@ void Player::Look() {
 }
 
 //--------------------------------------
-void Player::Go(Directions dir) {
+bool Player::Go(Directions dir) {
+
+	if (dir == ERROR){
+		cout << "\nThat's not a valid direction.";
+		return false;
+	}
 
 	Room* current_room = GetCurrentRoom();
 
@@ -24,34 +29,37 @@ void Player::Go(Directions dir) {
 
 	if (exit == nullptr) {
 		cout << "\nThere is no exit to the " << DirectionToString(dir);
-		return;
+		return false;
 	}
-	
+		
 	if (exit->IsLocked()) {
 		cout << "\nThe " << exit->GetName() << " is locked";
-		return;
+		return false;
 	}
 
 	ChangeParent(exit->GetDestinationFrom(current_room));
 	cout << "\nYou go to the " << DirectionToString(dir);
 	Look();
+	return true;
 }
 
 //--------------------------------------
-void Player::Take(string item_name) {
+bool Player::Take(string item_name) {
 	Room* current_room = GetCurrentRoom();
 	Item* item = current_room->GetItemByName(item_name);
 	if (item == nullptr) {
 		cout << "\nThere is no " << item_name << " here.";
-		return;
+		return false;
 	}
 	inventory.push_back(item);
-	current_room->RemoveContainedEntity(item);
+	contains.push_back(item);
+	item->ChangeParent(this);
 	cout << "\nYou take the " << item_name;
+	return true;
 }
 
 //--------------------------------------
-void Player::Drop(string item_name) {
+bool Player::Drop(string item_name) {
 	Item* item_to_drop = nullptr;
 	for (Entity* entity : inventory) {
 		Item* item = (Item*)entity;
@@ -60,36 +68,38 @@ void Player::Drop(string item_name) {
 			inventory.remove(item_to_drop);
 			item->ChangeParent(GetCurrentRoom());
 			cout << "\nYou drop the " << item_name;
-			return;
+			return true;
 		}
 	}
 	cout << "\nYou don't have a " << item_name << ".";
+	return false;
 }
 
 //--------------------------------------
-void Player::Unlock(Directions dir, string key_name) {
+bool Player::Unlock(Directions dir, string key_name) {
 	Room* current_room = GetCurrentRoom();
 	Exit* exit = current_room->GetExit(dir);
 	if (exit == nullptr) {
 		cout << "\nThere is no exit to the " << DirectionToString(dir);
-		return;
+		return false;
 	}
 	if (!exit->IsLocked()) {
 		cout << "\nThe " << exit->GetName() << " is not locked.";
-		return;
+		return false;
 	}
 	for (Entity* entity : inventory) {
 		Item* item = (Item*)entity;
 		if (Same(item->GetName(), key_name)) {
 			exit->Unlock();
 			cout << "\nYou unlock the " << exit->GetName() << " with the " << key_name;
-			return;
+			return true;
 		}
 	}
+	return false;
 }
 
 //--------------------------------------
-void Player::Put(string item_name, string container_name) {
+bool Player::Put(string item_name, string container_name) {
 	Item* item_to_put = nullptr;
 	for (Entity* entity : inventory) {
 		Item* item = (Item*)entity;
@@ -100,7 +110,7 @@ void Player::Put(string item_name, string container_name) {
 	}
 	if (item_to_put == nullptr) {
 		cout << "\nYou don't have a " << item_name << ".";
-		return;
+		return false;
 	}
 	
 	//First try finding container in the inventory
@@ -109,12 +119,12 @@ void Player::Put(string item_name, string container_name) {
 		if (Same(container->GetName(), container_name)) {
 			if (container->GetItemType() != CONTAINER) {
 				cout << "\nYou can't put anything in the " << container_name;
-				return;
+				return false;
 			}
 			item_to_put->ChangeParent(container);
 			inventory.remove(item_to_put);
 			cout << "\nYou put the " << item_name << " in the " << container_name;
-			return;
+			return true;
 		}
 	}
 
@@ -126,24 +136,25 @@ void Player::Put(string item_name, string container_name) {
 			if (Same(container->GetName(), container_name)) {
 				if (container->GetItemType() != CONTAINER) {
 					cout << "\nYou can't put anything in the " << container_name;
-					return;
+					return false;
 				}
 				if (!container->IsOpen()) {
 					cout << "\nThe " << container_name << " is closed.";
-					return;
+					return false;
 				}
 				item_to_put->ChangeParent(container);
 				inventory.remove(item_to_put);
 				cout << "\nYou put the " << item_name << " in the " << container_name;
-				return;
+				return true;
 			}
 		}
 	}
 
+	return false;
 }
 
 //--------------------------------------
-void Player::TakeFrom(string item_name, string container_name) {
+bool Player::TakeFrom(string item_name, string container_name) {
 	Item* item_container = nullptr;
 	//First try finding container in the inventory
 	for (Entity* entity : inventory) {
@@ -151,7 +162,7 @@ void Player::TakeFrom(string item_name, string container_name) {
 		if (Same(container->GetName(), container_name)) {
 			if (container->GetItemType() != CONTAINER) {
 				cout << "\nYou can't take anything from the " << container_name;
-				return;
+				return false;
 			}
 			item_container = container;
 			break;
@@ -167,7 +178,7 @@ void Player::TakeFrom(string item_name, string container_name) {
 				if (Same(container->GetName(), container_name)) {
 					if (container->GetItemType() != CONTAINER) {
 						cout << "\nYou can't take anything from the " << container_name;
-						return;
+						return false;
 					}
 					item_container = container;
 					break;
@@ -178,7 +189,7 @@ void Player::TakeFrom(string item_name, string container_name) {
 
 	if (item_container == nullptr) {
 		cout << "\nThere is no " << container_name << " here and you aren't holding it.";
-		return;
+		return false;
 	}
 			
 	for (Entity* entity : item_container->GetContains()) {
@@ -189,12 +200,12 @@ void Player::TakeFrom(string item_name, string container_name) {
 				inventory.push_back(item);
 				item_container->RemoveContainedEntity(item);
 				cout << "\nYou take the " << item_name << " from the " << container_name;
-				return;
+				return true;
 			}
 		}
 	}
 	cout << "\nThere is no " << item_name << " in the " << container_name;
-	return;
+	return false;
 }
 
 //--------------------------------------
@@ -210,51 +221,157 @@ void Player::Inventory() {
 }
 
 //--------------------------------------
-void Player::Examine(string item_name) {
+bool Player::Examine(string item_name) {
 	Room* current_room = GetCurrentRoom();
 
 	Item* item = current_room->GetItemByName(item_name);
 	
 	if (item == nullptr) {
 		cout << "\nThere is no " << item_name << " here.";
-		return;
+		return false;
 	}
 	
 	item->Examine();
+	return true;
 }
 
 //--------------------------------------
-void Player::Open(string item_name) {
+bool Player::Open(string item_name) {
 	Room* current_room = GetCurrentRoom();
 
 	Item* item = current_room->GetItemByName(item_name);
 	
 	if (item == nullptr) {
 		cout << "\nThere is no " << item_name << " here.";
-		return;
+		return false;
 	}
 	if (item->GetItemType() != CONTAINER) {
 		cout << "\nYou can't open the " << item_name;
-		return;
+		return false;
 	}
 	
 	item->Open();
+	return true;
 }
 
 //--------------------------------------
-void Player::Close(string item_name) {
+bool Player::Close(string item_name) {
 	Room* current_room = GetCurrentRoom();
 
 	Item* item = current_room->GetItemByName(item_name);
 	
 	if (item == nullptr) {
 		cout << "\nThere is no " << item_name << " here.";
-		return;
+		return false;
 	}
 	if (item->GetItemType() != CONTAINER) {
 		cout << "\nYou can't close the " << item_name;
-		return;
+		return false;
 	}
 	
 	item->Close();
+	return true;
+}
+
+//--------------------------------------
+bool Player::Equip(string item_name) {
+	if (equipped_weapon != nullptr) {
+		cout << "\nYou already have something equipped.";
+		return false;
+	}
+
+	for (Entity* entity : inventory) {
+		Item* item = (Item*)entity;
+		if (Same(item->GetName(), item_name)) {
+			if (item->GetItemType() == WEAPON) {
+				equipped_weapon = item;
+				cout << "\nYou equip the " << item_name;
+				return true;
+			}
+			else {
+				cout << "\nYou can't equip the " << item_name;
+				return false;
+			}
+		}
+	}
+	cout << "\nYou don't have a " << item_name << ".";
+	return false;
+}
+
+void Player::Unequip() {
+	if (equipped_weapon != nullptr) {
+		cout << "\nYou unequip the " << equipped_weapon->GetName();
+		equipped_weapon = nullptr;
+	}
+	else {
+		cout << "\nYou don't have anything equipped.";
+	}
+}
+
+//--------------------------------------
+bool Player::Attack(bool fatal_intent) {
+	if (combat_target == nullptr) {
+		cout << "\nWho are you attacking?";
+		return false;
+	}
+	Attack(combat_target->GetName(), fatal_intent);
+}
+
+bool Player::Attack(string target_name, bool fatal_intent) {
+	combat_target = GetCurrentRoom()->GetCreatureByName(target_name);
+
+	if (combat_target == nullptr) {
+		cout << "\nThere is no " << target_name << " here.";
+		return false;
+	}
+
+	if (combat_target->GetHealthStatus() == UNCONSCIOUS) {
+		combat_target->TakeDamage(FATAL_DAMAGE, true);
+		return true;
+	}
+
+	if (equipped_weapon != nullptr) {
+		DamageLevel damage = static_cast<DamageLevel>(rand() % 5);
+		if (damage == NO_DAMAGE) {
+			cout << "\nYou attack the " << combat_target->GetName() << " with the " << equipped_weapon->GetName() << " but miss.";
+			return true;
+		}
+		cout << "\nYou hit the " << combat_target->GetName() << " with the " << equipped_weapon->GetName();
+		combat_target->TakeDamage(damage, true);
+	}
+	else {
+		DamageLevel damage = static_cast<DamageLevel>(rand() % 2);
+		if (damage == NO_DAMAGE) {
+			cout << "\nYou attack the " << combat_target->GetName() << " but miss.";
+			return true;
+		}
+		cout << "\nYou hit the " << combat_target->GetName() << " without any weapon.";
+		combat_target->TakeDamage(damage, true);
+	}
+}
+
+//--------------------------------------
+void Player::TakeDamage(DamageLevel damage, bool fatal_intent) {
+	if (damage == NO_DAMAGE) {
+		return;
+	}
+
+	int new_health_status = static_cast<int>(health_status) + static_cast<int>(damage);
+	if (new_health_status > DEAD) {
+		new_health_status = DEAD;
+	}
+
+	health_status = static_cast<HealthStatus>(new_health_status);
+
+	if (health_status >= UNCONSCIOUS && !fatal_intent) {
+		health_status = UNCONSCIOUS;
+		cout << "\nYou fall unconscious.";
+	}
+	else if (health_status == UNCONSCIOUS && fatal_intent) {
+		health_status = DEAD;
+	}
+	if (health_status >= DEAD) {
+		health_status = DEAD;
+		cout << "\nYou have died.";
+	}
 }

@@ -24,8 +24,8 @@ World::World() {
 	entities.push_back(exit2);
 
 
-	Item* item1 = new Item("Item1", "This is an weapon item called Item 1", room1, WEAPON);
-	Item* itemContainer = new Item("box", "A carboard box", room1, CONTAINER);
+	Item* item1 = new Item("Sword", "A shiny silver sword", room1, WEAPON);
+	Item* itemContainer = new Item("box", "A cardboard box", room1, CONTAINER);
 	Item* key = new Item("Key", "An old and rusty key", room2, MISC);
 	entities.push_back(item1);
 	entities.push_back(itemContainer);
@@ -34,7 +34,7 @@ World::World() {
 	exit2->AddKey(key);
 
 
-	Creature* creature1 = new Creature("Creature1", "This is a creature called Creature 1", room2);
+	Creature* creature1 = new Creature("Creature1", "This is a creature called Creature 1", room2, true);
 	entities.push_back(creature1);
 
 
@@ -59,18 +59,13 @@ bool World::Update(vector<string> args) {
 
 	if (args.size() > 0) {
 		return_value = ParseCommand(args);
-	}
+		if (return_value) {
+			for (Entity* e : entities) {
+				e->Update();
+			}
 
-	chrono::steady_clock::time_point current_time = chrono::steady_clock::now();
-	chrono::duration<float> elapsed_time = current_time - start_time;
-	if (elapsed_time.count() >= UPDATE_FREQUENCY) {
-		for (Entity* entity : entities) {
-			//entity->Update();
 		}
-
-		start_time = current_time;
 	}
-
 	return return_value;
 }
 
@@ -85,11 +80,23 @@ bool World::ParseCommand(vector<string> args) {
 		}
 		else if (Same(args[0], "east") || Same(args[0], "west") || Same(args[0], "north") || Same(args[0], "south")
 			|| Same(args[0], "e") || Same(args[0], "w") || Same(args[0], "n") || Same(args[0], "s")) {
-			player->Go(StringToDirection(args[0]));
+			valid_command = player->Go(StringToDirection(args[0]));
 			break;
 		}
 		else if (Same(args[0], "inventory") || Same(args[0], "i")) {
 			player->Inventory();
+			break;
+		}
+		else if (Same(args[0], "unequip")) {
+			player->Unequip();
+			break;
+		}
+		else if (Same(args[0], "attack")) {
+			valid_command = player->Attack(false);
+			break;
+		}
+		else if (Same(args[0], "kill")) {
+			valid_command = player->Attack(true);
 			break;
 		}
 		else {
@@ -103,23 +110,39 @@ bool World::ParseCommand(vector<string> args) {
 			break;
 		}
 		else if (Same(args[0], "look") || Same(args[0], "examine")) {
-			player->Examine(args[1]);
+			valid_command = player->Examine(args[1]);
 			break;
 		}
 		else if (Same(args[0], "take")) {
-			player->Take(args[1]);
+			valid_command = player->Take(args[1]);
 			break;
 		}
 		else if (Same(args[0], "drop")) {
-			player->Drop(args[1]);
+			valid_command = player->Drop(args[1]);
 			break;
 		}
 		else if (Same(args[0], "open")) {
-			player->Open(args[1]);
+			valid_command = player->Open(args[1]);
 			break;
 		}
 		else if (Same(args[0], "close")) {
-			player->Close(args[1]);
+			valid_command = player->Close(args[1]);
+			break;
+		}
+		else if (Same(args[0], "attack")) {
+			valid_command = player->Attack(args[1], false);
+			break;
+		}
+		else if (Same(args[0], "kill")) {
+			valid_command = player->Attack(args[1], true);
+			break;
+		}
+		else if (Same(args[0], "equip")) {
+			valid_command = player->Equip(args[1]);
+			break;
+		}
+		else if (Same(args[0], "unequip")) {
+			player->Unequip();
 			break;
 		}
 		else {
@@ -131,13 +154,13 @@ bool World::ParseCommand(vector<string> args) {
 		break;
 	case 4:
 		if (Same(args[0], "unlock") && (Same(args[2], "with") || Same(args[2], "using"))) {
-			player->Unlock(StringToDirection(args[1]), args[3]);
+			valid_command = player->Unlock(StringToDirection(args[1]), args[3]);
 		}
 		else if (Same(args[0], "put") && Same(args[2], "in")) {
-			player->Put(args[1], args[3]);
+			valid_command = player->Put(args[1], args[3]);
 		}
 		else if ((Same(args[0], "take") && Same(args[2], "from")) || (Same(args[0], "take") && Same(args[2], "from"))) {
-			player->TakeFrom(args[1], args[3]);
+			valid_command = player->TakeFrom(args[1], args[3]);
 		}
 		else {
 			valid_command = false;

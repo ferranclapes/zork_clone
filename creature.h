@@ -9,24 +9,52 @@ class Room;
 class Item;
 enum Directions;
 
+enum HealthStatus {
+	HEALTHY,
+	LIGHTLY_WOUNDED,
+	WOUNDED,
+	CRITICALLY_WOUNDED,
+	UNCONSCIOUS,
+	DEAD
+};
+
+enum DamageLevel {
+	NO_DAMAGE,
+	LIGHT_DAMAGE,
+	MEDIUM_DAMAGE,
+	HEAVY_DAMAGE,
+	FATAL_DAMAGE
+};
+
 using namespace std;
 
 class Creature : public Entity {
 public:
 	//Methods-------------
-	Creature(const char* name, const char* description, Room* room);
+	Creature(const char* name, const char* description, Room* room, bool is_hostile);
+
+	virtual void Update();
 
 	virtual void Look();
-	virtual void Go(Directions dir);
+	virtual bool Go(Directions dir);
 
-	virtual void Take(string item_name);
-	virtual void Unlock(Directions dir, string key_name);
+	virtual bool Take(string item_name);
+	virtual bool Unlock(Directions dir, string key_name);
+
+	virtual bool Equip(string item_name);
+	virtual void Unequip();
 
 	Room* GetCurrentRoom();
 
 	bool IsAlive();
+	HealthStatus GetHealthStatus() { return health_status; }
+	void Attack();
+	virtual void TakeDamage(DamageLevel damage, bool fatal_intent);
 	//Atributes-------------
 protected:
-	int hp;
 	list<Item*> inventory;
+	HealthStatus health_status = HEALTHY;
+	bool is_hostile;
+	Creature* combat_target = nullptr;
+	Item* equipped_weapon = nullptr;
 };

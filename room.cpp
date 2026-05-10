@@ -3,6 +3,7 @@
 #include "exit.h"
 #include "item.h"
 #include "creature.h"
+#include "player.h"
 
 using namespace std;
 
@@ -64,6 +65,17 @@ Item* Room::GetItemByName(string item_name) {
 	return nullptr;
 }
 
+Creature* Room::GetCreatureByName(string creature_name) {
+	for (Entity* entity : contains) {
+		if (entity->GetType() == CREATURE) {
+			if (Same(entity->GetName(), creature_name)) {
+				return (Creature*)entity;
+			}
+		}
+	}
+	return nullptr;
+}
+
 //--------------------------------------
 bool Room::PlayerInRoom() {
 	for (Entity* entity : contains) {
@@ -74,3 +86,12 @@ bool Room::PlayerInRoom() {
 	return false;
 }
 
+//--------------------------------------
+Player* Room::GetPlayer() {
+	for (Entity* entity : contains) {
+		if (entity->GetType() == PLAYER) {
+			return (Player*)entity;
+		}
+	}
+	return nullptr;
+}

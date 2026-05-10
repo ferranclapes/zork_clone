@@ -6,6 +6,8 @@
 
 class Item;
 class Exit;
+class Creature;
+class Player;
 enum Directions;
 
 class Room : public Entity {
@@ -17,6 +19,8 @@ public:
 
 	Exit* GetExit(Directions dir);
 	Item* GetItemByName(string item_name);
+	Creature* GetCreatureByName(string creature_name);
 	bool PlayerInRoom();
+	Player* GetPlayer();
 	//Atributes-------------
 };
