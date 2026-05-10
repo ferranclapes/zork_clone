@@ -95,17 +95,15 @@ bool Creature::Unlock(Directions dir, string key_name) {
 	if (!exit->IsLocked()) {
 		return false;
 	}
-	for (Entity* entity : inventory) {
-		Item* item = (Item*)entity;
-		if (item->GetName() == key_name) {
-			exit->Unlock();
-			if (current_room->PlayerInRoom()) {
-				cout << "\nThe " << name << " unlocks the " << exit->GetName() << " to the " << DirectionToString(dir);
-			}
-			return true;
-		}
+	Item* key = GetFromInventory(key_name);
+	if (key == nullptr) {
+		return false;
 	}
-	return false;
+	exit->Unlock();
+	if (current_room->PlayerInRoom()) {
+		cout << "\nThe " << name << " unlocks the " << exit->GetName() << " to the " << DirectionToString(dir);
+	}
+	return true;
 }
 
 //--------------------------------------
@@ -114,6 +112,27 @@ Item* Creature::GetFromInventory(string item_name) {
 		Item* item = (Item*)entity;
 		if (Same(item->GetName(), item_name)) {
 			return item;
+		}
+		if (item->GetItemType() == CONTAINER) {
+			Item* item_in_container = GetFromContainer(item_name, item);
+			if (item_in_container != nullptr) {
+				return item_in_container;
+			}
+		}
+	}
+	return nullptr;
+}
+
+Item* Creature::GetFromContainer(string item_name, Item* container) {
+	if (container->GetItemType() != CONTAINER) {
+		return nullptr;
+	}
+	for (Entity* entity : container->GetContains()) {
+		if (entity->GetType() == ITEM) {
+			Item* item = (Item*)entity;
+			if (Same(item->GetName(), item_name)) {
+				return item;
+			}
 		}
 	}
 	return nullptr;
@@ -127,23 +146,21 @@ bool Creature::Equip(string item_name) {
 
 	bool player_in_room = GetCurrentRoom()->PlayerInRoom();
 
-	for (Entity* entity : inventory) {
-		Item* item = (Item*)entity;
-		if (Same(item->GetName(), item_name)) {
-			if (item->GetItemType() == WEAPON) {
-				equipped_weapon = item;
-				if (player_in_room) {
-					cout << "\nThe " << name << " equips the " << item_name;
-				}
-				return true;
-			}
-			else {
-				if (player_in_room) {
-					cout << "\nThe " << item_name << " can't be equipped.";
-				}
-				return false;
-			}
+	Item* weapon = GetFromInventory(item_name);
+	if (weapon == nullptr) {
+		weapon = GetCurrentRoom()->GetItemByName(item_name);
+	}
+	if (weapon == nullptr) {
+		return false;
+	}
+
+	if (weapon->GetItemType() == WEAPON) {
+		equipped_weapon = weapon;
+		weapon->ChangeParent(this);
+		if (player_in_room) {
+			cout << "\nThe " << name << " equips the " << item_name;
 		}
+		return true;
 	}
 	return false;
 }
