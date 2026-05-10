@@ -40,6 +40,7 @@ public:
 
 	virtual bool Take(string item_name);
 	virtual bool Unlock(Directions dir, string key_name);
+	Item* GetFromInventory(string item_name);
 
 	virtual bool Equip(string item_name);
 	virtual void Unequip();

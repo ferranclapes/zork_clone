@@ -36,6 +36,9 @@ void Item::Look() {
 
 //--------------------------------------
 void Item::Examine() {
+	if (item_type == READABLE) {
+		cout << "\nYou read the " << name << ":";
+	}
 	cout << "\n" << description;
 	if (item_type == CONTAINER) {
 		ListContents();

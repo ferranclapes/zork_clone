@@ -24,6 +24,7 @@ public:
 	bool Examine(string item_name);
 	bool Open(string container_name);
 	bool Close(string container_name);
+	bool Read(string item_name);
 
 	bool Equip(string item_name);
 	void Unequip();

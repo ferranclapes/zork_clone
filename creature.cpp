@@ -109,6 +109,17 @@ bool Creature::Unlock(Directions dir, string key_name) {
 }
 
 //--------------------------------------
+Item* Creature::GetFromInventory(string item_name) {
+	for (Entity* entity : inventory) {
+		Item* item = (Item*)entity;
+		if (Same(item->GetName(), item_name)) {
+			return item;
+		}
+	}
+	return nullptr;
+}
+
+//--------------------------------------
 bool Creature::Equip(string item_name) {
 	if (!IsAlive()) {
 		return false;

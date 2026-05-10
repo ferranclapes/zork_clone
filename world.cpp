@@ -35,11 +35,13 @@ void World::InitializeWorld() {
 	entities.push_back(exit2);
 
 
-	Item* item1 = new Item("Sword", "A shiny silver sword", room1, WEAPON);
-	Item* itemContainer = new Item("box", "A cardboard box", room1, CONTAINER);
+	Item* sword = new Item("Sword", "A shiny silver sword", room1, WEAPON);
+	Item* box = new Item("Box", "A cardboard box", room1, CONTAINER);
+	Item* letter = new Item("Letter", "Welcome to my clone of Zork! Thanks for playing, I hope you enjoy it :)", box, READABLE);
 	Item* key = new Item("Key", "An old and rusty key", room2, MISC);
-	entities.push_back(item1);
-	entities.push_back(itemContainer);
+	entities.push_back(sword);
+	entities.push_back(box);
+	entities.push_back(letter);
 	entities.push_back(key);
 
 	exit2->AddKey(key);
@@ -164,6 +166,10 @@ CommandReturnValue World::ParseCommand(vector<string> args) {
 		}
 		else if (Same(args[0], "unequip")) {
 			player->Unequip();
+			break;
+		}
+		else if (Same(args[0], "read")) {
+			valid_parameters = player->Read(args[1]);
 			break;
 		}
 		else {

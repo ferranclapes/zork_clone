@@ -274,6 +274,26 @@ bool Player::Close(string item_name) {
 }
 
 //--------------------------------------
+bool Player::Read(string item_name) {
+	Item* item = GetCurrentRoom()->GetItemByName(item_name);
+	if (item == nullptr) {
+		item = GetFromInventory(item_name);
+		if (item == nullptr) {
+			cout << "\nThere is no " << item_name << " here and you aren't holding it.";
+			return false;
+		}
+	}
+	if (item->GetItemType() != READABLE) {
+		cout << "\nYou can't read a" << item_name;
+		return false;
+	}
+	else {
+		item->Examine();
+		return true;
+	}
+}
+
+//--------------------------------------
 bool Player::Equip(string item_name) {
 	if (equipped_weapon != nullptr) {
 		cout << "\nYou already have something equipped.";
