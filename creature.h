@@ -7,6 +7,7 @@
 
 class Room;
 class Item;
+class Exit;
 enum Directions;
 
 enum HealthStatus {
@@ -39,7 +40,8 @@ public:
 	virtual bool Go(Directions dir);
 
 	virtual bool Take(string item_name);
-	virtual bool Unlock(Directions dir, string key_name);
+	virtual bool Unlock(Exit* exit, string key_name);
+	virtual bool Lock(Exit* exit, string key_name);
 	Item* GetFromInventory(string item_name);
 	Item* GetFromContainer(string item_name, Item* container);
 

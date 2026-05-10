@@ -7,6 +7,8 @@
 
 using namespace std;
 
+class Exit;
+
 class Player : public Creature {
 public:
 	//Methods-------------
@@ -16,7 +18,6 @@ public:
 	bool Go(Directions dir);
 	bool Take(string item_name);
 	bool Drop(string item_name);
-	bool Unlock(Directions dir, string key_name);
 	bool Put(string item_name, string container_name);
 	bool TakeFrom(string item_name, string container_name);
 
@@ -25,6 +26,14 @@ public:
 	bool Open(string container_name);
 	bool Close(string container_name);
 	bool Read(string item_name);
+
+	bool Unlock(Directions dir, string key_name);
+	bool Unlock(string exit_name, string key_name);
+	bool Unlock(Exit* exit, string key_name);
+
+	bool Lock(Directions dir, string key_name);
+	bool Lock(string exit_name, string key_name);
+	bool Lock(Exit* exit, string key_name);
 
 	bool Equip(string item_name);
 	void Unequip();

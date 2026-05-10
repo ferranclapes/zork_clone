@@ -1,6 +1,2 @@
-﻿  creature.cpp
-  player.cpp
-  Generando código...
-C:\Users\ferra\Desktop\zork_clone\player.cpp(302,1): warning C4715: 'Player::Attack': no todas las rutas de acceso de control devuelven un valor
-C:\Users\ferra\Desktop\zork_clone\player.cpp(344,1): warning C4715: 'Player::Attack': no todas las rutas de acceso de control devuelven un valor
+﻿  world.cpp
   zork_clone.vcxproj -> C:\Users\ferra\Desktop\zork_clone\x64\Debug\zork_clone.exe

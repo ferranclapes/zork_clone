@@ -19,20 +19,21 @@ public:
 	void Look(Room* current_room);
 	Directions GetDirectionFrom(Room* current_room);
 	Room* GetDestinationFrom(Room* current_room);
-	void AddKey(Item* key);
+	void SetKey(Item* key);
 
 	bool IsLocked() { return is_locked; }
-	void Unlock();
-	void Lock();
+	bool Unlock(Item* key);
+	bool Lock(Item* key);
 	//Attributes-------------
 private:
 	Directions direction;
 	Directions opposite_direction;
 	Room* source;
 	Room* destination;
-	list<Item*> keys;
 
 	bool is_locked = false;
+	Item* key = nullptr;
+
 	bool is_one_way = false;
 
 };

@@ -73,13 +73,26 @@ bool Player::Drop(string item_name) {
 }
 
 //--------------------------------------
+
 bool Player::Unlock(Directions dir, string key_name) {
-	Room* current_room = GetCurrentRoom();
-	Exit* exit = current_room->GetExit(dir);
+	Exit* exit = GetCurrentRoom()->GetExit(dir);
 	if (exit == nullptr) {
 		cout << "\nThere is no exit to the " << DirectionToString(dir);
 		return false;
 	}
+	return Unlock(exit, key_name);
+}
+
+bool Player::Unlock(string exit_name, string key_name) {
+	Exit* exit = GetCurrentRoom()->GetExit(exit_name);
+	if (exit == nullptr) {
+		cout << "\nThere is no exit named " << exit_name;
+		return false;
+	}
+	return Unlock(exit, key_name);
+}
+
+bool Player::Unlock(Exit* exit, string key_name) {
 	if (!exit->IsLocked()) {
 		cout << "\nThe " << exit->GetName() << " is not locked.";
 		return false;
@@ -90,9 +103,55 @@ bool Player::Unlock(Directions dir, string key_name) {
 		return false;
 	}
 	else {
-		exit->Unlock();																				//TODO: Fer que la clau sigui unica per porta.
-		cout << "\nYou unlock the " << exit->GetName() << " with the " << key_name;
-		return true;
+		bool unlocked = exit->Unlock(key);
+		if (unlocked) {
+			cout << "\nYou unlock the " << exit->GetName() << " with the " << key_name;
+		}
+		else {
+			cout << "\nThe " << key_name << " doesn't fit the " << exit->GetName();
+		}
+		return unlocked;
+	}
+}
+
+//--------------------------------------
+bool Player::Lock(Directions dir, string key_name) {
+	Exit* exit = GetCurrentRoom()->GetExit(dir);
+	if (exit == nullptr) {
+		cout << "\nThere is no exit to the " << DirectionToString(dir);
+		return false;
+	}
+	return Lock(exit, key_name);
+}
+
+bool Player::Lock(string exit_name, string key_name) {
+	Exit* exit = GetCurrentRoom()->GetExit(exit_name);
+	if (exit == nullptr) {
+		cout << "\nThere is no exit named " << exit_name;
+		return false;
+	}
+	return Lock(exit, key_name);
+}
+
+bool Player::Lock(Exit* exit, string key_name) {
+	if (exit->IsLocked()) {
+		cout << "\nThe " << exit->GetName() << " is already locked.";
+		return false;
+	}
+	Item* key = GetFromInventory(key_name);
+	if (key == nullptr) {
+		cout << "\nYou don't have a " << key_name << ".";
+		return false;
+	}
+	else {
+		bool locked = exit->Lock(key);
+		if (locked) {
+			cout << "\nYou lock the " << exit->GetName() << " with the " << key_name;
+		}
+		else {
+			cout << "\nThe " << key_name << " doesn't fit the " << exit->GetName();
+		}
+		return locked;
 	}
 }
 

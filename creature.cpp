@@ -81,13 +81,11 @@ bool Creature::Take(string item_name) {
 }
 
 //--------------------------------------
-bool Creature::Unlock(Directions dir, string key_name) {
+bool Creature::Unlock(Exit* exit, string key_name) {
 	if (!IsAlive()) {
 		return false;
 	}
-	Room* current_room = GetCurrentRoom();
-	Exit* exit = current_room->GetExit(dir);
-	if (exit == nullptr) {
+	if (GetCurrentRoom()->GetExit(exit->GetName()) == nullptr) {
 		return false;
 	}
 	if (!exit->IsLocked()) {
@@ -97,9 +95,30 @@ bool Creature::Unlock(Directions dir, string key_name) {
 	if (key == nullptr) {
 		return false;
 	}
-	exit->Unlock();
-	if (current_room->PlayerInRoom()) {
-		cout << "\nThe " << name << " unlocks the " << exit->GetName() << " to the " << DirectionToString(dir);
+	bool success = exit->Unlock(key);
+	if (GetCurrentRoom()->PlayerInRoom() && success) {
+		cout << "\nThe " << name << " unlocks the " << exit->GetName() << " to the " << DirectionToString(exit->GetDirectionFrom(GetCurrentRoom()));
+	}
+	return true;
+}
+
+bool Creature::Lock(Exit* exit, string key_name) {
+	if (!IsAlive()) {
+		return false;
+	}
+	if (GetCurrentRoom()->GetExit(exit->GetName()) == nullptr) {
+		return false;
+	}
+	if (exit->IsLocked()) {
+		return false;
+	}
+	Item* key = GetFromInventory(key_name);
+	if (key == nullptr) {
+		return false;
+	}
+	bool success = exit->Lock(key);
+	if (GetCurrentRoom()->PlayerInRoom() && success) {
+		cout << "\nThe " << name << " locks the " << exit->GetName() << " to the " << DirectionToString(exit->GetDirectionFrom(GetCurrentRoom()));
 	}
 	return true;
 }

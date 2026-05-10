@@ -77,15 +77,23 @@ Room* Exit::GetDestinationFrom(Room* current_room) {
 }
 
 //--------------------------------------
-void Exit::AddKey(Item* key) {
-	this->keys.push_back(key);
+void Exit::SetKey(Item* key) {
+	this->key = key;
 }
 
 //--------------------------------------
-void Exit::Unlock() {
-	is_locked = false;
+bool Exit::Unlock(Item* key) {
+	if (this->key == key) {
+		is_locked = false;
+		return true;
+	}
+	return false;
 }
 
-void Exit::Lock() {
-	is_locked = true;
+bool Exit::Lock(Item* key) {
+	if (this->key == key) {
+		is_locked = true;
+		return true;
+	}
+	return false;
 }

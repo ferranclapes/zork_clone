@@ -18,6 +18,7 @@ public:
 	void Look();
 
 	Exit* GetExit(Directions dir);
+	Exit* GetExit(string exit_name);
 	Item* GetItemByName(string item_name);
 	Creature* GetCreatureByName(string creature_name);
 	bool PlayerInRoom();

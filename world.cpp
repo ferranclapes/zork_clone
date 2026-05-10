@@ -30,7 +30,7 @@ void World::InitializeWorld() {
 
 
 	Exit* exit1 = new Exit("Little Path", EAST, WEST, room1, room2, false, false);
-	Exit* exit2 = new Exit("Another Path", NORTH, SOUTH, room2, room3, false, true);
+	Exit* exit2 = new Exit("Door", NORTH, SOUTH, room2, room3, false, true);
 	entities.push_back(exit1);
 	entities.push_back(exit2);
 
@@ -44,10 +44,10 @@ void World::InitializeWorld() {
 	entities.push_back(letter);
 	entities.push_back(key);
 
-	exit2->AddKey(key);
+	exit2->SetKey(key);
 
 
-	Creature* creature1 = new Creature("Creature1", "This is a creature called Creature 1", room2, true);
+	Creature* creature1 = new Creature("Creature1", "This is a creature called Creature 1", room2, false);
 	entities.push_back(creature1);
 
 
@@ -180,14 +180,33 @@ CommandReturnValue World::ParseCommand(vector<string> args) {
 	case 3:
 		break;
 	case 4:
-		if (Same(args[0], "unlock") && (Same(args[2], "with") || Same(args[2], "using"))) {
-			valid_parameters = player->Unlock(StringToDirection(args[1]), args[3]);
+		if ((Same(args[0], "unlock") || Same(args[0], "open")) && (Same(args[2], "with") || Same(args[2], "using"))) {
+			Directions dir = StringToDirection(args[1]);
+			if (dir != ERROR) {
+				valid_parameters = player->Unlock(dir, args[3]);
+			}
+			else {
+				valid_parameters = player->Unlock(args[1], args[3]);
+			}
+			break;
+		}
+		else if ((Same(args[0], "lock") || Same(args[0], "close")) && (Same(args[2], "with") || Same(args[2], "using"))) {
+			Directions dir = StringToDirection(args[1]);
+			if (dir != ERROR) {
+				valid_parameters = player->Lock(dir, args[3]);
+			}
+			else {
+				valid_parameters = player->Lock(args[1], args[3]);
+			}
+			break;
 		}
 		else if (Same(args[0], "put") && Same(args[2], "in")) {
 			valid_parameters = player->Put(args[1], args[3]);
+			break;
 		}
 		else if ((Same(args[0], "take") && Same(args[2], "from")) || (Same(args[0], "take") && Same(args[2], "from"))) {
 			valid_parameters = player->TakeFrom(args[1], args[3]);
+			break;
 		}
 		else {
 			valid_command = INVALID_COMMAND;

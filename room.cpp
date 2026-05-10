@@ -53,6 +53,17 @@ Exit* Room::GetExit(Directions dir) {
 	return nullptr;
 }
 
+Exit* Room::GetExit(string exit_name) {
+	for (Entity* entity : contains) {
+		if (entity->GetType() == EXIT) {
+			if (Same(entity->GetName(), exit_name)) {
+				return (Exit*)entity;
+			}
+		}
+	}
+	return nullptr;
+}
+
 //--------------------------------------
 Item* Room::GetItemByName(string item_name) {
 	for (Entity* entity : contains) {
