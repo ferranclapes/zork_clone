@@ -381,7 +381,7 @@ bool Player::Attack(string target_name, bool fatal_intent) {
 		}
 		else {
 			cout << "\nYou hit the " << combat_target->GetName() << " with the " << equipped_weapon->GetName();
-			combat_target->TakeDamage(damage, true);
+			combat_target->TakeDamage(damage, fatal_intent);
 		}
 	}
 	else {
@@ -392,7 +392,7 @@ bool Player::Attack(string target_name, bool fatal_intent) {
 		}
 		else {
 			cout << "\nYou hit the " << combat_target->GetName() << " without any weapon.";
-			combat_target->TakeDamage(damage, true);
+			combat_target->TakeDamage(damage, fatal_intent);
 		}
 	}
 
@@ -427,5 +427,78 @@ void Player::TakeDamage(DamageLevel damage, bool fatal_intent) {
 		cout << "\nYou have died.";
 		cout << "\nGame over.\nBetter luck next time!";
 		cout << "\nDo you want to play again?";
+	}
+}
+
+//--------------------------------------
+void Player::Diagnose() {
+	switch (health_status) {
+	case HEALTHY:
+		cout << "\nYou are in perfect health.";
+		break;
+	case LIGHTLY_WOUNDED:
+		cout << "\nYou are a bit bruised.";
+		break;
+	case WOUNDED:
+		cout << "\nYou have some cuts and bruises.";
+		cout << "\nSeams you could use some rest.";
+		break;
+	case CRITICALLY_WOUNDED:
+		cout << "\nYou are very hurt.";
+		cout << "\nYou should find a place to rest soon.";
+		break;
+	case UNCONSCIOUS:
+		cout << "\nYou are unconscious.";
+		break;
+	case DEAD:
+		cout << "\nYou are dead.";
+		break;
+	}
+}
+
+//--------------------------------------
+bool Player::Rest() {
+	if (GetCurrentRoom()->GetHostileCreatures(this).size() > 0) {
+		cout << "\nYou can't rest while there are hostile creatures in the room!";
+		return false;
+	}
+
+	if (health_status == HEALTHY) {
+		cout << "\nYou are already in perfect health.";
+		resting = false;
+		return false;
+	}
+	else if (health_status == UNCONSCIOUS || health_status == DEAD) {
+		cout << "\nYou can't rest while you are unconscious or dead.";
+		resting = false;
+		return false;
+	}
+	else {
+		resting = true;
+		int new_health_status = static_cast<int>(health_status) - 1;
+		if (new_health_status <= HEALTHY) {
+			health_status = HEALTHY;
+			resting = false;
+			cout << "\nYou have fully recovered.";
+		}
+		else {
+			health_status = static_cast<HealthStatus>(new_health_status);
+			cout << "\nYou rest and recover a bit.";
+			cout << "\nDo you want to keep resting?";
+		}
+		return true;
+	}
+}
+
+bool Player::StopResting() {
+	if (!resting) {
+		cout << "\nYou aren't resting.";
+		return false;
+	}
+	else {
+		resting = false;
+		cout << "\nYou stop resting.";
+		Diagnose();
+		return true;
 	}
 }

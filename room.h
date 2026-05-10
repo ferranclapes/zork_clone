@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <list>
 
 #include "entity.h"
 
@@ -19,8 +20,12 @@ public:
 
 	Exit* GetExit(Directions dir);
 	Exit* GetExit(string exit_name);
+
 	Item* GetItemByName(string item_name);
+
 	Creature* GetCreatureByName(string creature_name);
+	list<Creature*> GetHostileCreatures(Creature* hostile_towards_this);
+
 	bool PlayerInRoom();
 	Player* GetPlayer();
 	//Atributes-------------

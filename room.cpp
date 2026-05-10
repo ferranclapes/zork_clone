@@ -76,6 +76,7 @@ Item* Room::GetItemByName(string item_name) {
 	return nullptr;
 }
 
+//--------------------------------------
 Creature* Room::GetCreatureByName(string creature_name) {
 	for (Entity* entity : contains) {
 		if (entity->GetType() == CREATURE) {
@@ -85,6 +86,20 @@ Creature* Room::GetCreatureByName(string creature_name) {
 		}
 	}
 	return nullptr;
+}
+
+//--------------------------------------
+list<Creature*> Room::GetHostileCreatures(Creature* hostile_towards_this) {
+	list<Creature*> hostile_creatures;
+	for (Entity* entity : contains) {
+		if (entity->GetType() == CREATURE) {
+			Creature* creature = (Creature*)entity;
+			if (creature->IsHostile() && creature->GetCombatTarget() == hostile_towards_this && !creature->IsUnconscious()) {
+				hostile_creatures.push_back(creature);
+			}
+		}
+	}
+	return hostile_creatures;
 }
 
 //--------------------------------------

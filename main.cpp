@@ -19,7 +19,7 @@ int main()
 
 	World world = World();
 
-	cout << "\n> ";
+	cout << "\n\n> ";
 
     while (1)
     {
@@ -60,7 +60,7 @@ int main()
 		if (args.size() > 0) {
 			args.clear();
 			player_input = "";
-			cout << "\n> ";
+			cout << "\n\n> ";
 		}
     }
 }

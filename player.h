@@ -41,5 +41,9 @@ public:
 	bool Attack(bool fatal_intent);
 	bool Attack(string target_name, bool fatal_intent);
 	void TakeDamage(DamageLevel damage, bool fatal_intent);
+
+	void Diagnose();
+	bool Rest();
+	bool StopResting();
 	//Atributes-------------
 };

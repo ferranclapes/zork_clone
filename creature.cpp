@@ -14,6 +14,16 @@ Creature::Creature(const char* name, const char* description, Room* room, bool i
 //--------------------------------------
 void Creature::Update() {
 	if (!IsAlive()) {
+		combat_target = nullptr;
+		return;
+	}
+	
+	if (health_status == UNCONSCIOUS) {
+		StartResting();
+		return;
+	}
+	if (resting) {
+		Rest();
 		return;
 	}
 
@@ -202,6 +212,58 @@ Room* Creature::GetCurrentRoom() {
 //--------------------------------------
 bool Creature::IsAlive() {
 	return health_status != DEAD;
+}
+
+//--------------------------------------
+bool Creature::StartResting() {
+	if (!IsAlive()) {
+		return false;
+	}
+	if (health_status == HEALTHY) {
+		return false;
+	}
+	resting = true;
+	return Rest();
+}
+
+bool Creature::Rest() {
+	if (!IsAlive()) {
+		return false;
+	}
+	if (!resting) {
+		return false;
+	}
+	if (health_status == HEALTHY) {
+		return StopResting();
+	}
+	int new_health_status = static_cast<int>(health_status) - 1;
+	if (new_health_status <= HEALTHY) {
+		new_health_status = HEALTHY;
+		resting = false;
+		if (GetCurrentRoom()->PlayerInRoom()) {
+			cout << "\nThe " << name << " has fully recovered.";
+		}
+		return true;
+	}
+	health_status = static_cast<HealthStatus>(new_health_status);
+	if (GetCurrentRoom()->PlayerInRoom()) {
+		cout << "\nThe " << name << " rests and recovers a bit.";
+	}
+	return true;
+}
+
+bool Creature::StopResting() {
+	if (!IsAlive()) {
+		return false;
+	}
+	if (!resting) {
+		return false;
+	}
+	resting = false;
+	if (GetCurrentRoom()->PlayerInRoom()) {
+		cout << "\nThe " << name << " stops resting.";
+	}
+	return true;
 }
 
 //--------------------------------------
