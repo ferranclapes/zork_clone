@@ -1,0 +1,15 @@
+﻿  creature.cpp
+  entity.cpp
+  exit.cpp
+  item.cpp
+  main.cpp
+  player.cpp
+  room.cpp
+  useful.cpp
+  world.cpp
+  Generando código
+  Previous IPDB not found, fall back to full compilation.
+C:\Users\ferra\Desktop\zork_clone\player.cpp(488): warning C4715: 'Player::Attack': no todas las rutas de acceso de control devuelven un valor
+  All 610 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Generación de código finalizada
+  zork_clone.vcxproj -> C:\Users\ferra\Desktop\zork_clone\x64\Release\zork_clone.exe
