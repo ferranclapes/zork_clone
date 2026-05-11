@@ -29,7 +29,7 @@ void Item::Look() {
 		}
 		break;
 	default:
-		cout << "\nYou see a " << name;
+		cout << "\nYou see a " << name << ".";
 		break;
 	}
 }
@@ -42,6 +42,14 @@ void Item::Examine() {
 	cout << "\n" << description;
 	if (item_type == CONTAINER) {
 		ListContents();
+	}
+	else if (item_type == LIGHT_SOURCE) {
+		if (is_open) {
+			cout << "\nIt's turned on.";
+		}
+		else {
+			cout << "\nIt's turned off.";
+		}
 	}
 }
 
@@ -71,7 +79,7 @@ void Item::ListContents() {
 //--------------------------------------
 void Item::Open() {
 	if (item_type != CONTAINER) {
-		cout << "\nYou can't open the " << name;
+		cout << "\nYou can't open the " << name << ".";
 		return;
 	}
 	if (is_open) {
@@ -83,13 +91,13 @@ void Item::Open() {
 		return;
 	}
 	is_open = true;
-	cout << "\nYou open the " << name;
+	cout << "\nYou open the " << name << ".";
 	ListContents();
 }
 
 void Item::Close() {
 	if (item_type != CONTAINER) {
-		cout << "\nYou can't close the " << name;
+		cout << "\nYou can't close the " << name << ".";
 		return;
 	}
 	if (!is_open) {
@@ -97,5 +105,22 @@ void Item::Close() {
 		return;
 	}
 	is_open = false;
-	cout << "\nYou close the " << name;
+	cout << "\nYou close the " << name << ".";
+}
+
+//--------------------------------------
+bool Item::TurnOn() {
+	if (item_type != LIGHT_SOURCE || is_open) {
+		return false;
+	}
+	is_open = true;
+	return true;
+}
+
+bool Item::TurnOff() {
+	if (item_type != LIGHT_SOURCE || !is_open) {
+		return false;
+	}
+	is_open = false;
+	return true;
 }

@@ -8,12 +8,18 @@
 using namespace std;
 
 //--------------------------------------
-Room::Room(const char* name, const char* description) : Entity(name, description, nullptr) {
+Room::Room(const char* name, const char* description, bool is_dark) : Entity(name, description, nullptr) {
 	type = ROOM;
+	this->is_dark = is_dark;
 }
 
 //--------------------------------------
 void Room::Look() {
+	if (is_dark && !IsThereLightSource()) {
+		cout << "\nIt's too dark to see anything.";
+		return;
+	}
+
 	cout << "\n" << name;
 	cout << "\n" << description;
 
@@ -120,4 +126,25 @@ Player* Room::GetPlayer() {
 		}
 	}
 	return nullptr;
+}
+
+//--------------------------------------
+bool Room::IsThereLightSource() {
+	for (Entity* entity : contains) {
+		if (entity->GetType() == ITEM) {
+			Item* item = (Item*)entity;
+			if (item->GetItemType() == LIGHT_SOURCE && item->IsTurnedOn()) {
+				return true;
+			}
+		}
+		else if (entity->GetType() == CREATURE || entity->GetType() == PLAYER) {
+			Creature* creature = (Creature*)entity;
+			for (Item* item : creature->GetFromInventory(LIGHT_SOURCE)) {
+				if (item->IsTurnedOn()) {
+					return true;
+				}
+			}
+		}
+	}
+	return false;
 }

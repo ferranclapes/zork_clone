@@ -9,6 +9,7 @@ class Room;
 class Item;
 class Exit;
 enum Directions;
+enum ItemType;
 
 enum HealthStatus {
 	HEALTHY,
@@ -43,10 +44,13 @@ public:
 	virtual bool Unlock(Exit* exit, string key_name);
 	virtual bool Lock(Exit* exit, string key_name);
 	Item* GetFromInventory(string item_name);
+	list<Item*> GetFromInventory(ItemType item_type);
 	Item* GetFromContainer(string item_name, Item* container);
 
 	virtual bool Equip(string item_name);
 	virtual void Unequip();
+	virtual bool TurnOn(string item_name);
+	virtual bool TurnOff(string item_name);
 
 	Room* GetCurrentRoom();
 
@@ -73,4 +77,6 @@ protected:
 	bool is_hostile;
 	Creature* combat_target = nullptr;
 	Item* equipped_weapon = nullptr;
+
+	list<string> dialogue;
 };

@@ -150,6 +150,19 @@ Item* Creature::GetFromInventory(string item_name) {
 	return nullptr;
 }
 
+list<Item*> Creature::GetFromInventory(ItemType item_type) {
+	list<Item*> items_of_type;
+	for (Entity* entity : contains) {
+		if (entity->GetType() == ITEM) {
+			Item* item = (Item*)entity;
+			if (item->GetItemType() == item_type) {
+				items_of_type.push_back(item);
+			}
+		}
+	}
+	return items_of_type;
+}
+
 Item* Creature::GetFromContainer(string item_name, Item* container) {
 	if (container->GetItemType() != CONTAINER) {
 		return nullptr;
@@ -203,6 +216,47 @@ void Creature::Unequip() {
 		}
 		equipped_weapon = nullptr;
 	}
+}
+
+//--------------------------------------
+bool Creature::TurnOn(string item_name) {
+	if (!IsAlive()) {
+		return false;
+	}
+	Item* item = GetFromInventory(item_name);
+	if (item == nullptr) {
+		item = GetCurrentRoom()->GetItemByName(item_name);
+	}
+	if (item == nullptr) {
+		return false;
+	}
+	if (item->TurnOn()) {
+		if (GetCurrentRoom()->PlayerInRoom()){
+			cout << "\nThe " << name << " turns on the " << item->GetName();
+		}
+		return true;
+	}
+	return false;
+}
+
+bool Creature::TurnOff(string item_name) {
+	if (!IsAlive()) {
+		return false;
+	}
+	Item* item = GetFromInventory(item_name);
+	if (item == nullptr) {
+		item = GetCurrentRoom()->GetItemByName(item_name);
+	}
+	if (item == nullptr) {
+		return false;
+	}
+	if (item->TurnOff()) {
+		if (GetCurrentRoom()->PlayerInRoom()) {
+			cout << "\nThe " << name << " turns off the " << item->GetName();
+		}
+		return true;
+	}
+	return false;
 }
 
 //--------------------------------------

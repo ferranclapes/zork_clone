@@ -17,6 +17,7 @@ public:
 	void Look();
 	bool Go(Directions dir);
 	bool Take(string item_name);
+	bool Take(Item* item);
 	bool Drop(string item_name);
 	bool Put(string item_name, string container_name);
 	bool TakeFrom(string item_name, string container_name);
@@ -37,6 +38,9 @@ public:
 
 	bool Equip(string item_name);
 	void Unequip();
+
+	bool TurnOn(string item_name);
+	bool TurnOff(string item_name);
 
 	bool Attack(bool fatal_intent);
 	bool Attack(string target_name, bool fatal_intent);

@@ -56,6 +56,17 @@ bool Player::Take(string item_name) {
 	return true;
 }
 
+bool Player::Take(Item* item) {
+	Room* current_room = GetCurrentRoom();
+	if (item == nullptr || item->GetParent() != current_room) {
+		cout << "\nThere is no " << item->GetName() << " here.";
+		return false;
+	}
+	item->ChangeParent(this);
+	cout << "\nYou take the " << item->GetName();
+	return true;
+}
+
 //--------------------------------------
 bool Player::Drop(string item_name) {
 	Item* item_to_drop = nullptr;
@@ -103,14 +114,14 @@ bool Player::Unlock(Exit* exit, string key_name) {
 		return false;
 	}
 	else {
-		bool unlocked = exit->Unlock(key);
-		if (unlocked) {
+		if (exit->Unlock(key)) {
 			cout << "\nYou unlock the " << exit->GetName() << " with the " << key_name;
+			return true;
 		}
 		else {
 			cout << "\nThe " << key_name << " doesn't fit the " << exit->GetName();
+			return false;
 		}
-		return unlocked;
 	}
 }
 
@@ -159,8 +170,12 @@ bool Player::Lock(Exit* exit, string key_name) {
 bool Player::Put(string item_name, string container_name) {
 	Item* item_to_put = GetFromInventory(item_name);
 	if (item_to_put == nullptr) {
-		cout << "\nYou don't have a " << item_name << ".";
-		return false;
+		item_to_put = GetCurrentRoom()->GetItemByName(item_name);
+		if (item_to_put == nullptr) {
+			cout << "\nThere is no " << item_name << " here and you aren't holding it.";
+			return false;
+		}
+		Take(item_to_put);
 	}
 
 	Item* container = GetFromInventory(container_name);
@@ -296,13 +311,14 @@ bool Player::Close(string item_name) {
 
 //--------------------------------------
 bool Player::Read(string item_name) {
-	Item* item = GetCurrentRoom()->GetItemByName(item_name);
+	Item* item = GetFromInventory(item_name);
 	if (item == nullptr) {
-		item = GetFromInventory(item_name);
+		item = GetCurrentRoom()->GetItemByName(item_name);
 		if (item == nullptr) {
 			cout << "\nThere is no " << item_name << " here and you aren't holding it.";
 			return false;
 		}
+		Take(item);
 	}
 	if (item->GetItemType() != READABLE) {
 		cout << "\nYou can't read a" << item_name;
@@ -324,10 +340,11 @@ bool Player::Equip(string item_name) {
 	Item* weapon = GetFromInventory(item_name);
 	if (weapon == nullptr) {
 		weapon = GetCurrentRoom()->GetItemByName(item_name);
-	}
-	if (weapon == nullptr) {
-		cout << "\nThere is no " << item_name << " here and you aren't holding it.";
-		return false;
+		if (weapon == nullptr) {
+			cout << "\nThere is no " << item_name << " here and you aren't holding it.";
+			return false;
+		}
+		Take(weapon);
 	}
 
 	if (weapon->GetItemType() != WEAPON) {
@@ -348,6 +365,53 @@ void Player::Unequip() {
 	}
 	else {
 		cout << "\nYou don't have anything equipped.";
+	}
+}
+
+//--------------------------------------
+bool Player::TurnOn(string item_name) {
+	Item* item = GetFromInventory(item_name);
+	if (item == nullptr) {
+		item = GetCurrentRoom()->GetItemByName(item_name);
+		if (item == nullptr) {
+			cout << "\nThere is no " << item_name << " here and you aren't holding it.";
+			return false;
+		}
+		else
+		{
+			Take(item->GetName());
+		}
+	}
+	if (item->TurnOn()) {
+		cout << "\nYou turn on the " << item_name;
+		return true;
+	}
+	else {
+		cout << "\nYou can't turn on the " << item_name;
+		return false;
+	}
+}
+
+bool Player::TurnOff(string item_name) {
+	Item* item = GetFromInventory(item_name);
+	if (item == nullptr) {
+		item = GetCurrentRoom()->GetItemByName(item_name);
+		if (item == nullptr) {
+			cout << "\nThere is no " << item_name << " here and you aren't holding it.";
+			return false;
+		}
+		else
+		{
+			Take(item->GetName());
+		}
+	}
+	if (item->TurnOff()) {
+		cout << "\nYou turn off the " << item_name;
+		return true;
+	}
+	else {
+		cout << "\nYou can't turn off the " << item_name;
+		return false;
 	}
 }
 

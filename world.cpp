@@ -21,9 +21,9 @@ World::~World() {
 
 //--------------------------------------
 void World::InitializeWorld() {
-	Room* room1 = new Room("Room 1", "This is a room called Room 1");
-	Room* room2 = new Room("Room 2", "This is a room called Room 2");
-	Room* room3 = new Room("Room 3", "This is a room called Room 3");
+	Room* room1 = new Room("Room 1", "This is a room called Room 1", false);
+	Room* room2 = new Room("Room 2", "This is a room called Room 2", true);
+	Room* room3 = new Room("Room 3", "This is a room called Room 3", false);
 	entities.push_back(room1);
 	entities.push_back(room2);
 	entities.push_back(room3);
@@ -39,15 +39,17 @@ void World::InitializeWorld() {
 	Item* box = new Item("Box", "A cardboard box", room1, CONTAINER);
 	Item* letter = new Item("Letter", "Welcome to my clone of Zork! Thanks for playing, I hope you enjoy it :)", box, READABLE);
 	Item* key = new Item("Key", "An old and rusty key", room2, MISC);
+	Item* flashlight = new Item("Flashlight", "A small flashlight, it can be turned on to illuminate dark places", room1, LIGHT_SOURCE);
 	entities.push_back(sword);
 	entities.push_back(box);
 	entities.push_back(letter);
 	entities.push_back(key);
+	entities.push_back(flashlight);
 
 	exit2->SetKey(key);
 
 
-	Creature* troll = new Creature("troll", "A big and nasty troll", room2, true);
+	Creature* troll = new Creature("troll", "A big and nasty troll", room2, false);
 	entities.push_back(troll);
 
 
@@ -201,6 +203,18 @@ CommandReturnValue World::ParseCommand(vector<string> args) {
 			break;
 
 		case 3:
+			if (Same(args[0], "turn") && Same(args[1], "on")) {
+				valid_parameters = player->TurnOn(args[2]);
+				break;
+			}
+			else if (Same(args[0], "turn") && Same(args[1], "off")) {
+				valid_parameters = player->TurnOff(args[2]);
+				break;
+			}
+			else {
+				valid_command = INVALID_COMMAND;
+				break;
+			}
 			break;
 		case 4:
 			if ((Same(args[0], "unlock") || Same(args[0], "open")) && (Same(args[2], "with") || Same(args[2], "using"))) {

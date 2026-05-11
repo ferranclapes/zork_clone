@@ -14,7 +14,7 @@ enum Directions;
 class Room : public Entity {
 public:
 	//Methods-------------
-	Room(const char* name, const char* description);
+	Room(const char* name, const char* description, bool is_dark);
 
 	void Look();
 
@@ -28,5 +28,10 @@ public:
 
 	bool PlayerInRoom();
 	Player* GetPlayer();
+
+	bool IsDark() { return is_dark; }
+	bool IsThereLightSource();
 	//Atributes-------------
+private:
+	bool is_dark;
 };
