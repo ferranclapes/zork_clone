@@ -28,7 +28,7 @@ A C++ text-adventure inspired by the classic Zork. This project focuses on objec
 14. Go West to the Treasure Room
 
 ## License
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the GNU GENERAL PUBLIC LICENSE - see the LICENSE file for details.
 
 ## Repository Link
 https://github.com/ferranclapes/zork_clone
