@@ -3,6 +3,8 @@
 #include <string>
 #include <vector>
 
+class Item;
+
 using namespace std;
 
 enum Directions {
@@ -10,7 +12,17 @@ enum Directions {
 	EAST,
 	SOUTH,
 	WEST,
+	UP,
+	DOWN,
 	ERROR
+};
+
+
+struct DialogueLine {
+	string text = "";
+	Item* required_item = nullptr;	// The item must be in the creature's inventory to advance to next line
+	Item* item_to_give = nullptr;	// The item will be given when advanced to this line
+	int next_line_index = -1;
 };
 
 void Tokenize(const string& line, vector<string>& arguments);

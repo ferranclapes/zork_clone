@@ -48,8 +48,12 @@ bool Player::Take(string item_name) {
 	Room* current_room = GetCurrentRoom();
 	Item* item = current_room->GetItemByName(item_name);
 	if (item == nullptr) {
-		cout << "\nThere is no " << item_name << " here.";
-		return false;
+		item = current_room->GetItemFromContainers(item_name);
+
+		if (item == nullptr) {
+			cout << "\nThere is no " << item_name << " here.";
+			return false;
+		}
 	}
 	item->ChangeParent(this);
 	cout << "\nYou take the " << item_name;
@@ -58,7 +62,11 @@ bool Player::Take(string item_name) {
 
 bool Player::Take(Item* item) {
 	Room* current_room = GetCurrentRoom();
-	if (item == nullptr || item->GetParent() != current_room) {
+	if (item == nullptr) {
+		cout << "\nThere is no " << item->GetName() << " here.";
+		return false;
+	}
+	if (item->GetParent() != current_room && item->GetParent()->GetParent() != current_room) {
 		cout << "\nThere is no " << item->GetName() << " here.";
 		return false;
 	}
@@ -172,8 +180,11 @@ bool Player::Put(string item_name, string container_name) {
 	if (item_to_put == nullptr) {
 		item_to_put = GetCurrentRoom()->GetItemByName(item_name);
 		if (item_to_put == nullptr) {
-			cout << "\nThere is no " << item_name << " here and you aren't holding it.";
-			return false;
+			item_to_put = GetCurrentRoom()->GetItemFromContainers(item_name);
+			if (item_to_put == nullptr) {
+				cout << "\nThere is no " << item_name << " here and you aren't holding it.";
+				return false;
+			}
 		}
 		Take(item_to_put);
 	}
@@ -236,6 +247,30 @@ bool Player::TakeFrom(string item_name, string container_name) {
 }
 
 //--------------------------------------
+bool Player::Give(string item_name, string creature_name) {
+	Item* item_to_give = GetFromInventory(item_name);
+	if (item_to_give == nullptr) {
+		item_to_give = GetCurrentRoom()->GetItemByName(item_name);
+		if (item_to_give == nullptr) {
+			item_to_give = GetCurrentRoom()->GetItemFromContainers(item_name);
+			if (item_to_give == nullptr) {
+				cout << "\nThere is no " << item_name << " here and you aren't holding it.";
+				return false;
+			}
+		}
+		Take(item_to_give);
+	}
+	Creature* creature_to_give_to = GetCurrentRoom()->GetCreatureByName(creature_name);
+	if (creature_to_give_to == nullptr) {
+		cout << "\nThere is no " << creature_name << " here.";
+		return false;
+	}
+	item_to_give->ChangeParent(creature_to_give_to);
+	cout << "\nYou give the " << item_name << " to the " << creature_name;
+	return true;
+}
+
+//--------------------------------------
 void Player::Inventory() {
 	if (contains.empty()) {
 		cout << "\nYour inventory is empty.";
@@ -251,15 +286,25 @@ void Player::Inventory() {
 bool Player::Examine(string item_name) {
 	Room* current_room = GetCurrentRoom();
 
+	if (current_room->IsDark() && !current_room->IsThereLightSource()) {
+		cout << "\nIt's too dark to see anything.";
+		return false;
+	}
+
 	Item* item = GetFromInventory(item_name);
 	if (item == nullptr) {
 		item = current_room->GetItemByName(item_name);
+		if (item == nullptr) {
+			item = current_room->GetItemFromContainers(item_name);
+			if (item == nullptr) {
+				cout << "\nThere is no " << item_name << " here and you aren't holding it.";
+				return false;
+			}
+		}
+		Take(item);
 	}
 
-	if (item == nullptr) {
-		cout << "\nThere is no " << item_name << " here and you aren't holding it.";
-		return false;
-	}
+	
 	
 	item->Examine();
 	return true;
@@ -272,12 +317,15 @@ bool Player::Open(string item_name) {
 	Item* item = GetFromInventory(item_name);
 	if (item == nullptr) {
 		item = current_room->GetItemByName(item_name);
+		if (item == nullptr) {
+			item = current_room->GetItemFromContainers(item_name);
+			if (item == nullptr) {
+				cout << "\nThere is no " << item_name << " here and you aren't holding it.";
+				return false;
+			}
+		}
 	}
 	
-	if (item == nullptr) {
-		cout << "\nThere is no " << item_name << " here and you aren't holding it.";
-		return false;
-	}
 	if (item->GetItemType() != CONTAINER) {
 		cout << "\nYou can't open the " << item_name;
 		return false;
@@ -294,12 +342,15 @@ bool Player::Close(string item_name) {
 	Item* item = GetFromInventory(item_name);
 	if (item == nullptr) {
 		item = current_room->GetItemByName(item_name);
+		if (item == nullptr) {
+			item = current_room->GetItemFromContainers(item_name);
+			if (item == nullptr) {
+				cout << "\nThere is no " << item_name << " here and you aren't holding it.";
+				return false;
+			}
+		}
 	}
-	
-	if (item == nullptr) {
-		cout << "\nThere is no " << item_name << " here.";
-		return false;
-	}
+
 	if (item->GetItemType() != CONTAINER) {
 		cout << "\nYou can't close the " << item_name;
 		return false;
@@ -315,8 +366,11 @@ bool Player::Read(string item_name) {
 	if (item == nullptr) {
 		item = GetCurrentRoom()->GetItemByName(item_name);
 		if (item == nullptr) {
-			cout << "\nThere is no " << item_name << " here and you aren't holding it.";
-			return false;
+			item = GetCurrentRoom()->GetItemFromContainers(item_name);
+			if (item == nullptr) {
+				cout << "\nThere is no " << item_name << " here and you aren't holding it.";
+				return false;
+			}
 		}
 		Take(item);
 	}
@@ -341,8 +395,11 @@ bool Player::Equip(string item_name) {
 	if (weapon == nullptr) {
 		weapon = GetCurrentRoom()->GetItemByName(item_name);
 		if (weapon == nullptr) {
-			cout << "\nThere is no " << item_name << " here and you aren't holding it.";
-			return false;
+			weapon = GetCurrentRoom()->GetItemFromContainers(item_name);
+			if (weapon == nullptr) {
+				cout << "\nThere is no " << item_name << " here and you aren't holding it.";
+				return false;
+			}
 		}
 		Take(weapon);
 	}
@@ -374,8 +431,11 @@ bool Player::TurnOn(string item_name) {
 	if (item == nullptr) {
 		item = GetCurrentRoom()->GetItemByName(item_name);
 		if (item == nullptr) {
-			cout << "\nThere is no " << item_name << " here and you aren't holding it.";
-			return false;
+			item = GetCurrentRoom()->GetItemFromContainers(item_name);
+			if (item == nullptr) {
+				cout << "\nThere is no " << item_name << " here and you aren't holding it.";
+				return false;
+			}
 		}
 		else
 		{
@@ -397,8 +457,11 @@ bool Player::TurnOff(string item_name) {
 	if (item == nullptr) {
 		item = GetCurrentRoom()->GetItemByName(item_name);
 		if (item == nullptr) {
-			cout << "\nThere is no " << item_name << " here and you aren't holding it.";
-			return false;
+			item = GetCurrentRoom()->GetItemFromContainers(item_name);
+			if (item == nullptr) {
+				cout << "\nThere is no " << item_name << " here and you aren't holding it.";
+				return false;
+			}
 		}
 		else
 		{
@@ -464,6 +527,7 @@ bool Player::Attack(string target_name, bool fatal_intent) {
 		combat_target->SetHostile(true);
 		cout << "\nThe " << combat_target->GetName() << " is now mad at you!";
 	}
+	return true;
 }
 
 //--------------------------------------
@@ -565,4 +629,22 @@ bool Player::StopResting() {
 		Diagnose();
 		return true;
 	}
+}
+
+//--------------------------------------
+bool Player::Talk(string creature_name) {
+	Creature* creature = GetCurrentRoom()->GetCreatureByName(creature_name);
+	if (creature == nullptr) {
+		cout << "\nThere is no " << creature_name << " here.";
+		return false;
+	}
+	if (creature->GetHealthStatus() == UNCONSCIOUS) {
+		cout << "\nThe " << creature_name << " is not conscious.";
+		return false;
+	}
+	if (creature->GetHealthStatus() == DEAD) {
+		cout << "\nThe " << creature_name << " is dead.";
+		return false;
+	}
+	return creature->Talk("player");
 }

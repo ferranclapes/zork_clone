@@ -79,13 +79,42 @@ Item* Room::GetItemByName(string item_name) {
 			}
 		}
 	}
+
 	return nullptr;
+}
+
+Item* Room::GetItemFromContainers(string item_name) {
+	for (Item* container : GetItemsByType(CONTAINER)) {
+		if (container->IsOpen()) {
+			Item* item_in_container = nullptr;
+			for (Entity* entity : container->GetContains()) {
+				if (Same(entity->GetName(), item_name)) {
+					item_in_container = (Item*)entity;
+					return item_in_container;
+				}
+			}
+		}
+	}
+	return nullptr;
+}
+
+list<Item*> Room::GetItemsByType(ItemType item_type) {
+	list<Item*> items_of_type;
+	for (Entity* entity : contains) {
+		if (entity->GetType() == ITEM) {
+			Item* item = (Item*)entity;
+			if (item->GetItemType() == item_type) {
+				items_of_type.push_back(item);
+			}
+		}
+	}
+	return items_of_type;
 }
 
 //--------------------------------------
 Creature* Room::GetCreatureByName(string creature_name) {
 	for (Entity* entity : contains) {
-		if (entity->GetType() == CREATURE) {
+		if (entity->GetType() == CREATURE || entity->GetType() == PLAYER) {
 			if (Same(entity->GetName(), creature_name)) {
 				return (Creature*)entity;
 			}

@@ -10,6 +10,7 @@ class Exit;
 class Creature;
 class Player;
 enum Directions;
+enum ItemType;
 
 class Room : public Entity {
 public:
@@ -22,6 +23,8 @@ public:
 	Exit* GetExit(string exit_name);
 
 	Item* GetItemByName(string item_name);
+	Item* GetItemFromContainers(string item_name);
+	list<Item*> GetItemsByType(ItemType item_type);
 
 	Creature* GetCreatureByName(string creature_name);
 	list<Creature*> GetHostileCreatures(Creature* hostile_towards_this);

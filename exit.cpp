@@ -4,18 +4,15 @@
 #include "item.h"
 
 //--------------------------------------
-Exit::Exit(const char* name, Directions direction, Directions opposite_direction, Room* source, Room* destination, bool is_one_way, bool is_locked) : Entity(name, "", source) {
+Exit::Exit(const char* name, const char* description, Directions direction, Directions opposite_direction, Room* source, Room* destination, bool is_locked) : Entity(name, description, source) {
 	this->type = EXIT;
 	this->direction = direction;
 	this->opposite_direction = opposite_direction;
 	this->source = source;
 	this->destination = destination;
-	this->is_one_way = is_one_way;
 	this->is_locked = is_locked;
 
-	if (!is_one_way) {
-		destination->AddContainedEntity(this);
-	}
+	destination->AddContainedEntity(this);
 }
 
 //--------------------------------------
@@ -41,12 +38,13 @@ void Exit::Look(Room* current_room) {
 	else if (current_room == destination) {
 		dir = DirectionToString(opposite_direction);
 	}
+
 	
-	if (!is_locked) {
-		cout << "\nYou see a " << name << " to the " << dir;
+	if (is_locked) {
+		cout << "\nYou see a closed " << description << " going " << dir << ". It seems locked.";
 	}
 	else {
-		cout << "\nYou see a locked " << name << " to the " << dir;
+		cout << "\nYou see a " << description << " going " << dir << ".";
 	}
 }
 

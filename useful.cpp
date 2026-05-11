@@ -40,6 +40,10 @@ string DirectionToString(Directions dir) {
 		return "south";
 	case WEST:
 		return "west";
+	case UP:
+		return "up";
+	case DOWN:
+		return "down";
 	default:
 		return "";
 	}
@@ -57,6 +61,12 @@ Directions StringToDirection(const string str) {
 	}
 	else if (Same(str, "west") || Same(str, "w")) {
 		return WEST;
+	}
+	else if (Same(str, "up") || Same(str, "u")) {
+		return UP;
+	}
+	else if (Same(str, "down") || Same(str, "d")) {
+		return DOWN;
 	}
 	else {
 		return ERROR; //Default value

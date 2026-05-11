@@ -12,7 +12,7 @@ class Item;
 class Exit : public Entity {
 public:
 	//Methods-------------
-	Exit(const char* name, Directions direction, Directions opposite_direction, Room* source, Room* destination, bool is_one_way, bool is_locked);
+	Exit(const char* name, const char* description, Directions direction, Directions opposite_direction, Room* source, Room* destination, bool is_locked);
 	~Exit();
 	void RemoveDestination();
 
@@ -33,7 +33,4 @@ private:
 
 	bool is_locked = false;
 	Item* key = nullptr;
-
-	bool is_one_way = false;
-
 };

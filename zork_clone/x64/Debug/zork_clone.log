@@ -1,2 +1,3 @@
-﻿  room.cpp
+﻿  player.cpp
+C:\Users\ferra\Desktop\zork_clone\player.cpp(488,1): warning C4715: 'Player::Attack': no todas las rutas de acceso de control devuelven un valor
   zork_clone.vcxproj -> C:\Users\ferra\Desktop\zork_clone\x64\Debug\zork_clone.exe

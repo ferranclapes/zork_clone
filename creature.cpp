@@ -91,6 +91,33 @@ bool Creature::Take(string item_name) {
 }
 
 //--------------------------------------
+bool Creature::Give(string item_name, string creature_name) {
+	Item* item_to_give = GetFromInventory(item_name);
+	if (item_to_give == nullptr) {
+		item_to_give = GetCurrentRoom()->GetItemByName(item_name);
+		if (item_to_give == nullptr) {
+			return false;
+		}
+	}
+	Creature* creature_to_give_to = GetCurrentRoom()->GetCreatureByName(creature_name);
+	if (creature_to_give_to == nullptr) {
+		return false;
+	}
+	item_to_give->ChangeParent(creature_to_give_to);
+	if (GetCurrentRoom()->PlayerInRoom()) {
+		string crea_name;
+		if (Same(creature_to_give_to->GetName(), "Player")) {
+			crea_name = "you";
+		}
+		else {
+			crea_name = "the " + this->name;
+		}
+		cout << "\nThe " << this->name << " gives the " << item_name << " to " << crea_name;
+	}
+	return true;
+}
+
+//--------------------------------------
 bool Creature::Unlock(Exit* exit, string key_name) {
 	if (!IsAlive()) {
 		return false;
@@ -388,4 +415,35 @@ void Creature::TakeDamage(DamageLevel damage, bool fatal_intent) {
 		health_status = DEAD;
 		cout << "\nThe " << name << " has died.";
 	}
+}
+
+//--------------------------------------
+void Creature::AddDialogueLine(int line_index, DialogueLine dialogue_line) {
+	dialogue.insert({line_index, dialogue_line});
+}
+
+//--------------------------------------
+bool Creature::Talk(string creature_name) {
+	if (dialogue.empty()) {
+		cout << "\nThe " << name << " has nothing to say.";
+		return false;
+	}
+	Item* required_item = dialogue[current_dialogue_index].required_item;
+	if (required_item != nullptr && GetFromInventory(required_item->GetName()) != nullptr) {
+		current_dialogue_index = dialogue[current_dialogue_index].next_line_index;
+	}
+	if (dialogue[current_dialogue_index].item_to_give != nullptr) {
+		Give(dialogue[current_dialogue_index].item_to_give->GetName(), creature_name);
+	}
+
+	DialogueLine dialogue_line = dialogue[current_dialogue_index];
+	cout << "\n" << dialogue_line.text;
+
+	if (dialogue_line.required_item == nullptr) {
+		current_dialogue_index = dialogue_line.next_line_index;
+	}
+	if (dialogue[current_dialogue_index].item_to_give != nullptr) {
+		Give(dialogue[current_dialogue_index].item_to_give->GetName(), creature_name);
+	}
+	return true;
 }

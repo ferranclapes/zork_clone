@@ -1,11 +1,8 @@
 #pragma once
 
-#include <list>
 #include <string>
 #include "creature.h"
 #include "useful.h"
-
-using namespace std;
 
 class Exit;
 
@@ -21,6 +18,7 @@ public:
 	bool Drop(string item_name);
 	bool Put(string item_name, string container_name);
 	bool TakeFrom(string item_name, string container_name);
+	bool Give(string item_name, string creature_name);
 
 	void Inventory();
 	bool Examine(string item_name);
@@ -49,5 +47,7 @@ public:
 	void Diagnose();
 	bool Rest();
 	bool StopResting();
+
+	bool Talk(string creature_name);
 	//Atributes-------------
 };

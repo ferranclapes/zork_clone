@@ -2,6 +2,7 @@
 
 #include <list>
 #include <string>
+#include <map>
 #include "entity.h"
 
 
@@ -10,6 +11,7 @@ class Item;
 class Exit;
 enum Directions;
 enum ItemType;
+struct DialogueLine;
 
 enum HealthStatus {
 	HEALTHY,
@@ -28,7 +30,6 @@ enum DamageLevel {
 	FATAL_DAMAGE
 };
 
-using namespace std;
 
 class Creature : public Entity {
 public:
@@ -41,6 +42,7 @@ public:
 	virtual bool Go(Directions dir);
 
 	virtual bool Take(string item_name);
+	virtual bool Give(string item_name, string creature_name);
 	virtual bool Unlock(Exit* exit, string key_name);
 	virtual bool Lock(Exit* exit, string key_name);
 	Item* GetFromInventory(string item_name);
@@ -70,6 +72,9 @@ public:
 	bool IsHostile() { return is_hostile; }
 	void SetHostile(bool is_hostile) { this->is_hostile = is_hostile; }
 	Creature* GetCombatTarget() { return combat_target; }
+
+	void AddDialogueLine(int line_index, DialogueLine dialogue_line);
+	virtual bool Talk(string creature_name);
 	//Atributes-------------
 protected:
 	HealthStatus health_status = HEALTHY;
@@ -77,6 +82,7 @@ protected:
 	bool is_hostile;
 	Creature* combat_target = nullptr;
 	Item* equipped_weapon = nullptr;
-
-	list<string> dialogue;
+	
+	map<int, DialogueLine> dialogue;
+	int current_dialogue_index = 0;
 };
