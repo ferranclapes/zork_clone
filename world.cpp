@@ -55,12 +55,9 @@ void World::InitializeWorld() {
 	Exit* exit_for_houent = new Exit("Wooden Door", "wooden door", NORTH, SOUTH, room_forest, room_house_entrance, false);
 	Exit* exit_houent_mes = new Exit("Rotten Door", "rotten simple door", EAST, WEST, room_house_entrance, room_messy_room, false);
 	Exit* exit_houent_att = new Exit("Ladder", "old and creaky ladder", UP, DOWN, room_house_entrance, room_house_attic, false);
-	Exit* exit_dunent_dun = new Exit("Stone Stairs", "stone stairs leading down to the dungeon", DOWN, UP, room_dungeon_entrance, room_dungeon, true);
+	Exit* exit_dunent_dun = new Exit("Stairs", "stone stairs leading down to the dungeon", DOWN, UP, room_dungeon_entrance, room_dungeon, true);
 	exit_dunent_dun->SetKey(key);
-	Exit* exit_dun_tre = new Exit("Iron Door", "heavy iron door", WEST, EAST, room_dungeon, room_treasure, true);
-
-																					//TODO: Add key for iron door
-
+	Exit* exit_dun_tre = new Exit("Iron Door", "heavy iron door", WEST, EAST, room_dungeon, room_treasure, false);
 	entities.push_back(exit_dunent_for);
 	entities.push_back(exit_for_houent);
 	entities.push_back(exit_houent_mes);
